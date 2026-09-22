@@ -4,12 +4,10 @@
     {
       "name": "Python Quality Gate",
       "trigger": "PostFileSave",
-      "description": "Run Python quality checks on modified files",
       "matcher": "\\.py$",
       "action": {
-        "type": "command",
-        "command": "if (Test-Path \"requirements-dev.txt\") { pip install -r requirements-dev.txt } else { Write-Host \"requirements-dev.txt not found, skipping dependency installation\" }",
-        "timeout": 120
+        "type": "agent",
+        "prompt": "Perform Python quality validation on the saved file:\n\n1. Check Python syntax validity\n2. Run basic linting (pylint or flake8 if available)\n3. Report any syntax errors or linting issues found\n4. Note which tools are available and which are missing\n\nIf tools are not installed, report availability rather than failing. Do NOT install dependencies automatically."
       }
     }
   ]

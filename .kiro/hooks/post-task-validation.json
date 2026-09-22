@@ -3,11 +3,10 @@
   "hooks": [
     {
       "name": "Post Task Spec Validation",
-      "trigger": "PostTaskExec",
-      "description": "Post-task validation for Spec implementation",
+      "trigger": "PostTaskExecution",
       "action": {
-        "type": "command",
-        "command": "Write-Host \"Task Validation: Checking compliance with acceptance criteria and architectural safety invariant\""
+        "type": "agent",
+        "prompt": "Validate the completed Spec task against all requirements:\n\n1. Verify task acceptance criteria are fully met\n2. Verify compliance with requirements.md specifications\n3. Verify compliance with design.md architecture\n4. Verify compliance with Steering Documents\n5. Verify architectural safety invariant is maintained:\n   - AI Diagnosis has NOT gained SSM permissions\n   - Policy/Risk has NOT gained execution permissions\n   - HITL remains mandatory for state-changing operations\n   - Task Tokens are NOT exposed in code or logs\n   - No secrets were introduced\n6. Verify relevant tests pass or failures are reported\n7. Verify execution success is distinct from Recovery Verified\n8. Report any compliance issues or missing validations"
       }
     }
   ]

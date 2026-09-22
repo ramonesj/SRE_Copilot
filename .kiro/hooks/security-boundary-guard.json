@@ -4,11 +4,10 @@
     {
       "name": "SRE Copilot Security Boundary Guard",
       "trigger": "PreToolUse",
-      "description": "Security boundary enforcement for SRE Copilot",
-      "matcher": "\\.py$|tasks\\.md|design\\.md",
+      "matcher": "fs_write|str_replace|fs_append|fs_read",
       "action": {
-        "type": "command",
-        "command": "Write-Host \"Security Boundary Check: Verifying AI Diagnosis Engine does not have SSM execution permissions\""
+        "type": "agent",
+        "prompt": "Security Boundary Validation for SRE Copilot:\n\nReview the proposed file operation and check for violations of the architectural safety invariant:\n\n1. AI Diagnosis Engine MUST NOT have SSM execution permissions (no ssm:StartExecution, ssm:SendCommand in IAM policies or code)\n2. Policy/Risk Engine MUST NOT execute remediation (no state-changing operations)\n3. State-changing remediation MUST NOT bypass HITL approval\n4. Task Tokens MUST NOT be exposed in logs or user-facing code\n5. AWS credentials and secrets MUST NOT be hardcoded (no hardcoded keys, tokens, or passwords)\n6. Verify no secrets are written to source files\n\nIf the operation could violate any security boundary, block it and explain why. If safe, allow the operation."
       }
     }
   ]

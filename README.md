@@ -152,6 +152,32 @@ SRE Copilot reduces this cognitive and operational burden while preserving human
 
 ## Project Status
 
+### Kiro University Progress
+
+#### Completed
+- [x] Project Definition
+- [x] Requirements
+- [x] Technical Design
+- [x] Implementation Tasks
+- [x] Steering Documents
+- [x] Kiro Hooks
+- [x] Lesson 3 Hook Demonstration
+- [x] PBT Properties Defined
+- [x] PBT-001 Risk Score Bounds Executed
+- [x] PBT-002 AI Confidence Independence Executed
+- [x] 200 Generated PBT Cases Passed
+
+#### Pending
+- [ ] HITL Safety PBT Execution
+- [ ] Recovery Lifecycle PBT Execution
+- [ ] Infrastructure as Code Implementation
+- [ ] Core Lambda Components
+- [ ] HITL Workflow
+- [ ] SSM Service Remediation
+- [ ] Health Verification
+- [ ] Complete Audit System
+- [ ] Final End-to-End Demo
+
 **Current Phase**: MVP Development  
 **Target**: Single complete remediation scenario (critical service restart)
 
@@ -164,6 +190,81 @@ SRE Copilot reduces this cognitive and operational burden while preserving human
 - ✅ Service-level remediation via SSM (not instance restart)
 - ✅ Independent health verification
 - ✅ Immutable audit trail (30-day retention MVP)
+
+## Kiro University Lessons
+
+### Lesson 3: Kiro Hooks for Quality Gates
+
+**Status**: ✅ Completed
+
+Implemented three Kiro hooks to enforce quality gates and security boundaries:
+
+#### Python Quality Gate Hook
+- **File**: `.kiro/hooks/python-quality-gate.json`
+- **Trigger**: `PostFileSave`
+- **Matcher**: `\.py$`
+- **Action Type**: `agent`
+- **Purpose**: Performs Python quality validation on files modified by Kiro. It checks syntax and available linting tools.
+
+#### Security Boundary Guard Hook
+- **File**: `.kiro/hooks/security-boundary-guard.json`
+- **Trigger**: `PreToolUse`
+- **Action Type**: `agent`
+- **Purpose**: Validates relevant agent operations against the SRE Copilot architectural safety invariant.
+
+#### Post Task Spec Validation Hook
+- **File**: `.kiro/hooks/post-task-validation.json`
+- **Trigger**: `PostTaskExecution`
+- **Action Type**: `agent`
+- **Purpose**: Validates completed Spec tasks against Requirements, Design, Steering, security constraints and relevant tests.
+
+### Lesson 4: Property-Based Testing
+
+**Status**: ✅ Completed
+
+Implemented Property-Based Testing (PBT) for core Risk Engine functions using Hypothesis.
+
+#### PBT Properties Defined: 7
+
+##### Executed Properties (2)
+1. **PBT-001: Risk Score Bounds**
+   - **Invariant**: `0 <= remediation_risk <= 100`
+   - **Status**: EXECUTED_PASS
+   - **Cases**: 100 generated, 100 passed, 0 failed
+
+2. **PBT-002: AI Confidence Independence**
+   - **Invariant**: Changing AI Confidence alone MUST NOT change Remediation Risk
+   - **Status**: EXECUTED_PASS
+   - **Cases**: 100 generated, 100 passed, 0 failed
+
+##### Pending Properties (5)
+3. **PBT-003: REJECT Safety Invariant**
+   - **Invariant**: REJECT => NO SSM
+   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
+
+4. **PBT-004: TIMEOUT Safety Invariant**
+   - **Invariant**: TIMEOUT => NO SSM
+   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
+
+5. **PBT-005: Execution Success Is Not Recovery**
+   - **Invariant**: SSM SUCCESS + Health Verification != SUCCESS => status != RESOLVED
+   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
+
+6. **PBT-006: Resolution Requires Verified Recovery**
+   - **Invariant**: RESOLVED => Health Verification SUCCESS
+   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
+
+7. **PBT-007: Idempotent Service Remediation**
+   - **Invariant**: remediate(remediate(state)) == remediate(state)
+   - **Status**: EXECUTION_DEFERRED
+
+#### PBT Execution Summary
+- **Properties Defined**: 7
+- **Properties Executed**: 2
+- **Generated Cases**: 200
+- **Passed**: 200
+- **Failed**: 0
+- **Counterexamples**: 0
 
 ## Getting Started
 

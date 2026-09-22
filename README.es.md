@@ -1,4 +1,4 @@
-<!-- Navegación de Idioma -->
+﻿<!-- Navegación de Idioma -->
 <div align="right">
   <a href="./README.md">English</a> | <strong>Español</strong>
 </div>
@@ -148,9 +148,35 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - **Python 3.11+**: Entorno de ejecución principal de Lambda
 - **AWS CDK/CloudFormation**: Infraestructura como Código
 - **pytest**: Pruebas unitarias y de integración
-- **GitHub Actions**: Automatización de pipeline CI/CD
+- **GitHub Actions**: automatización de pipeline CI/CD
 
 ## Estado del Proyecto
+
+### Progreso de Kiro University
+
+#### Completado
+- [x] Definición del Proyecto
+- [x] Requisitos
+- [x] Diseño Técnico
+- [x] Tareas de Implementación
+- [x] Documentos de Guía
+- [x] Kiro Hooks
+- [x] Demostración de la Lección 3
+- [x] Propiedades PBT Definidas
+- [x] PBT-001 Límites de Puntuación de Riesgo Ejecutadas
+- [x] PBT-002 Independencia de Confianza de IA Ejecutada
+- [x] 200 Casos PBT Generados Pasados
+
+#### Pendiente
+- [ ] Ejecución PBT Seguridad HITL
+- [ ] Ejecución PBT Ciclo de Vida de Recuperación
+- [ ] Implementación de Infraestructura como Código
+- [ ] Componentes Lambda Principales
+- [ ] Flujo de Trabajo HITL
+- [ ] remediación de Servicio SSM
+- [ ] verificación de Salud
+- [ ] Sistema de Auditoría Completo
+- [ ] Demostración End-to-End Final
 
 **Fase Actual**: Desarrollo MVP  
 **Objetivo**: Escenario único de remediación completa (reinicio de servicio crítico)
@@ -161,9 +187,84 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - ✅ Diagnóstico asistido por IA mediante Bedrock
 - ✅ Evaluación de riesgo e identificación de Runbooks SSM
 - ✅ Flujo de trabajo de aprobación HITL con gestión de tiempo de espera
-- ✅ Remedición a nivel de servicio mediante SSM (no reinicio de instancia)
-- ✅ Verificación de salud independiente
+- ✅ remediación a nivel de servicio mediante SSM (no reinicio de instancia)
+- ✅ verificación de salud independiente
 - ✅ Traza de auditoría inmutable (retención de 30 días MVP)
+
+## Lecciones de Kiro University
+
+### Lección 3: Kiro Hooks para Controles de Calidad
+
+**Estado**: ✅ Completado
+
+Implementados tres Kiro hooks para aplicar controles de calidad y límites de seguridad:
+
+#### Hook de Puerta de Entrada Python
+- **Archivo**: `.kiro/hooks/python-quality-gate.json`
+- **Disparador**: `PostFileSave`
+- **Coincidencia**: `\.py$`
+- **Tipo de Acción**: `agent`
+- **Propósito**: Realiza validación de calidad Python en archivos modificados por Kiro. Verifica sintaxis y herramientas de linting disponibles.
+
+#### Hook de Guardia de Límite de Seguridad
+- **Archivo**: `.kiro/hooks/security-boundary-guard.json`
+- **Disparador**: `PreToolUse`
+- **Tipo de Acción**: `agent`
+- **Propósito**: Valida operaciones relevantes del agente contra el invariante de seguridad arquitectónica de SRE Copilot.
+
+#### Hook de Validación Post-Tarea
+- **Archivo**: `.kiro/hooks/post-task-validation.json`
+- **Disparador**: `PostTaskExecution`
+- **Tipo de Acción**: `agent`
+- **Propósito**: Valida tareas de Spec completadas contra Requisitos, Diseño, Guía, restricciones de seguridad y pruebas relevantes.
+
+### Lección 4: Pruebas Basadas en Propiedades
+
+**Estado**: ✅ Completado
+
+Implementadas Pruebas Basadas en Propiedades (PBT) para funciones del Risk Engine usando Hypothesis.
+
+#### Propiedades PBT Definidas: 7
+
+##### Propiedades Ejecutadas (2)
+1. **PBT-001: Límites de Puntuación de Riesgo**
+   - **Invariante**: `0 <= remediation_risk <= 100`
+   - **Estado**: EXECUTED_PASS
+   - **Casos**: 100 generados, 100 pasados, 0 fallados
+
+2. **PBT-002: Independencia de Confianza de IA**
+   - **Invariante**: Cambiar la Confianza de IA sola NO DEBE cambiar el Riesgo de remediación
+   - **Estado**: EXECUTED_PASS
+   - **Casos**: 100 generados, 100 pasados, 0 fallados
+
+##### Propiedades Pendientes (5)
+3. **PBT-003: Invariante de Seguridad REJECT**
+   - **Invariante**: REJECT => NO SSM
+   - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
+
+4. **PBT-004: Invariante de Seguridad TIMEOUT**
+   - **Invariante**: TIMEOUT => NO SSM
+   - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
+
+5. **PBT-005: Éxito de Ejecución No Es Recuperación**
+   - **Invariante**: ÉXITO SSM + verificación de Salud != ÉXITO => estado != RESOLVED
+   - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
+
+6. **PBT-006: resolución Requiere Recuperación Verificada**
+   - **Invariante**: RESOLVED => ÉXITO de verificación de Salud
+   - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
+
+7. **PBT-007: remediación de Servicio Idempotente**
+   - **Invariante**: remediar(remediar(estado)) == remediar(estado)
+   - **Estado**: EXECUTION_DEFERRED
+
+#### Resumen de Ejecución PBT
+- **Propiedades Definidas**: 7
+- **Propiedades Ejecutadas**: 2
+- **Casos Generados**: 200
+- **Pasados**: 200
+- **Fallados**: 0
+- **Contrajemplos**: 0
 
 ## Comenzando
 
