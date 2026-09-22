@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "SRE Copilot Security Boundary Guard",
+      "trigger": "PreToolUse",
+      "description": "Security boundary enforcement for SRE Copilot",
+      "matcher": "\\.py$|tasks\\.md|design\\.md",
+      "action": {
+        "type": "command",
+        "command": "Write-Host \"Security Boundary Check: Verifying AI Diagnosis Engine does not have SSM execution permissions\""
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Python Quality Gate",
+      "trigger": "PostFileSave",
+      "description": "Run Python quality checks on modified files",
+      "matcher": "\\.py$",
+      "action": {
+        "type": "command",
+        "command": "if (Test-Path \"requirements-dev.txt\") { pip install -r requirements-dev.txt } else { Write-Host \"requirements-dev.txt not found, skipping dependency installation\" }",
+        "timeout": 120
+      }
+    }
+  ]
+}

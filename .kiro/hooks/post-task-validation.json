@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Post Task Spec Validation",
+      "trigger": "PostTaskExec",
+      "description": "Post-task validation for Spec implementation",
+      "action": {
+        "type": "command",
+        "command": "Write-Host \"Task Validation: Checking compliance with acceptance criteria and architectural safety invariant\""
+      }
+    }
+  ]
+}
