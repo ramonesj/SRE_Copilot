@@ -1,31 +1,10 @@
-<!-- Language Navigation -->
-<div align="right">
-  <strong>English</strong> | <a href="./README.es.md">Español</a>
-</div>
-
-<!-- Hero Section -->
-<div align="center">
-
 # SRE Copilot
+
 ## Human-Governed Autonomous Incident Remediation
 
 **AI diagnoses. Humans authorize. Automation remediates. Recovery is verified.**
 
 ![SRE Copilot Hero](docs/assets/branding/sre-copilot-hero.png)
-
-<!-- Badges -->
-<p align="center">
-  <img src="https://img.shields.io/badge/AWS-Cloud-FF9900?logo=amazonaws&logoColor=white" alt="AWS Cloud" />
-  <img src="https://img.shields.io/badge/Amazon-Bedrock-232F3E?logo=amazonaws&logoColor=white" alt="Amazon Bedrock" />
-  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white" alt="Python 3.11+" />
-  <img src="https://img.shields.io/badge/Infrastructure_as_Code-CloudFormation-FF9900?logo=amazonaws&logoColor=white" alt="Infrastructure as Code" />
-  <img src="https://img.shields.io/badge/Human_in_the_Loop-Required-FF6B6B?logo=people&logoColor=white" alt="Human-in-the-Loop" />
-  <img src="https://img.shields.io/badge/Status-MVP_Development-4CAF50?logo=git&logoColor=white" alt="MVP Development Status" />
-</p>
-
-</div>
-
----
 
 ## Executive Summary
 
@@ -166,6 +145,14 @@ SRE Copilot reduces this cognitive and operational burden while preserving human
 - [x] PBT-001 Risk Score Bounds Executed
 - [x] PBT-002 AI Confidence Independence Executed
 - [x] 200 Generated PBT Cases Passed
+- [x] Lesson 5 - AWS Step Functions Power Installed
+- [x] Lesson 5 - Power Activated On Demand
+- [x] Lesson 5 - Specialized Context Applied to SRE Copilot
+- [x] Lesson 6 - AWS Documentation MCP Configured
+- [x] Lesson 6 - MCP Server Connected
+- [x] Lesson 6 - MCP Tools Invoked
+- [x] Lesson 6 - AWS Documentation Retrieved
+- [x] Lesson 6 - HITL Architecture Assessed
 
 #### Pending
 - [ ] HITL Safety PBT Execution
@@ -265,6 +252,149 @@ Implemented Property-Based Testing (PBT) for core Risk Engine functions using Hy
 - **Passed**: 200
 - **Failed**: 0
 - **Counterexamples**: 0
+
+### Lesson 5 - Kiro Powers
+
+**Status**: ✅ Completed
+
+SRE Copilot uses Kiro Powers to load specialized knowledge and guidance dynamically based on conversation context.
+
+#### AWS Step Functions Power
+
+- **Power identifier**: `aws-step-functions`
+- **Power installed**: YES
+- **Power activated on demand**: YES
+- **Specialized context loaded**: YES
+- **Applied to SRE Copilot**: YES
+
+The Power was activated while reviewing the Human-in-the-Loop (HITL) orchestration architecture. Relevant activation context included:
+- AWS Step Functions
+- state machine
+- workflow
+- orchestration
+- Human-in-the-Loop
+
+The Power contributed specialized guidance related to:
+- Step Functions orchestration
+- callback integration patterns
+- Task Tokens
+- waitForTaskToken
+- APPROVE / REJECT / TIMEOUT branching
+- Retry and Catch
+- workflow error handling
+- service integrations
+
+**Security Note**: Task Tokens are sensitive callback credentials and must:
+- never appear in logs
+- never appear in user-facing interfaces
+- never be exposed through EventBridge events
+- be accessible only by the authorized callback component
+- remain securely correlated with the approval request and workflow execution
+- remain protected at rest if persisted
+
+The exact persistence mechanism follows the approved SRE Copilot security architecture.
+
+**Evidence**: [docs/kiro-university/lesson-5-powers.md](./docs/kiro-university/lesson-5-powers.md)
+
+### Lesson 6 - Model Context Protocol (MCP)
+
+**Status**: ✅ Completed
+
+SRE Copilot uses a workspace-level AWS Documentation MCP server to give Kiro access to external specialized AWS documentation tools and resources.
+
+#### MCP Configuration
+
+- **MCP server**: `aws-docs`
+- **Configuration scope**: WORKSPACE
+- **Configuration file**: `.kiro/settings/mcp.json`
+- **Server connected**: YES
+- **Tools/resources discovered**: YES
+
+#### Tools Discovered
+
+- `search_aws_documentation`
+- `get_aws_documentation`
+- `list_aws_services`
+
+#### Actual MCP Tools Invoked
+
+- `search_aws_documentation`
+- `get_aws_documentation`
+
+#### Real MCP Demonstration
+
+AWS Documentation MCP was used for a real SRE Copilot architectural research task:
+
+**Research topic**: AWS Step Functions callback integration pattern for Human-in-the-Loop approval
+
+The MCP-assisted research covered:
+- callback with Task Token
+- waitForTaskToken
+- Task Token context
+- SendTaskSuccess
+- SendTaskFailure
+- timeout behavior
+- callback security
+- IAM permissions for callback completion
+
+The MCP-grounded information was compared against the existing SRE Copilot HITL architecture.
+
+**Verified architecture result**: Architecture consistency: PASS
+
+#### Architecture Verification
+
+The AWS documentation confirmed:
+
+**APPROVE**
+-> remediation permitted
+
+**REJECT**
+-> REMEDIATION_REJECTED
+-> NO SSM EXECUTION
+
+**TIMEOUT**
+-> TIMEOUT_EXCEEDED
+-> NO SSM EXECUTION
+
+The critical invariant **REJECT => NO SSM** is maintained.
+
+**Note**: REJECT is a valid business/workflow decision returned through the controlled callback path. After callback completion, Step Functions evaluates the approval decision and branches appropriately. SendTaskSuccess and SendTaskFailure are callback APIs, but the final implementation may use them according to workflow and technical failure semantics.
+
+**Security**: The MCP demonstration was read-only.
+
+- AWS resources modified: NO
+- CloudFormation executed: NO
+- SSM remediation executed: NO
+- Secrets stored in mcp.json: NO
+- Wildcard auto-approval: NO
+
+**Evidence**: [docs/kiro-university/lesson-6-mcp.md](./docs/kiro-university/lesson-6-mcp.md)
+
+## Kiro University: Powers vs MCP
+
+### Lesson 5 - Kiro Power
+
+**Flow**: Conversation context → Relevant Power detected → Specialized knowledge loaded on demand → SRE Copilot architecture guidance
+
+Powers provide specialized contextual knowledge and workflows on demand based on conversation context.
+
+### Lesson 6 - MCP
+
+**Flow**: SRE Copilot technical question → Kiro → aws-docs MCP → External MCP tool invocation → AWS documentation retrieval → Grounded architectural assessment
+
+MCP provides external tools, prompts, and resources that Kiro can actively invoke.
+
+## Day 3 Evidence Flow
+
+SRE Copilot HITL Architecture
+→ AWS Step Functions Power activates
+→ Specialized Step Functions guidance loaded
+→ AWS Documentation MCP invoked
+→ Official AWS documentation retrieved
+→ HITL architecture assessed
+→ Architecture consistency: PASS
+
+This demonstrates how Powers and MCP complement each other inside a real project workflow.
 
 ## Getting Started
 

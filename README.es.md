@@ -148,7 +148,7 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - **Python 3.11+**: Entorno de ejecución principal de Lambda
 - **AWS CDK/CloudFormation**: Infraestructura como Código
 - **pytest**: Pruebas unitarias y de integración
-- **GitHub Actions**: automatización de pipeline CI/CD
+- **GitHub Actions**: Automatización de pipeline CI/CD
 
 ## Estado del Proyecto
 
@@ -166,6 +166,14 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - [x] PBT-001 Límites de Puntuación de Riesgo Ejecutadas
 - [x] PBT-002 Independencia de Confianza de IA Ejecutada
 - [x] 200 Casos PBT Generados Pasados
+- [x] Lección 5 - AWS Step Functions Power Instalada
+- [x] Lección 5 - Power Activada Bajo Demanda
+- [x] Lección 5 - Contexto Especializado Aplicado a SRE Copilot
+- [x] Lección 6 - AWS Documentation MCP Configurado
+- [x] Lección 6 - MCP Server Conectado
+- [x] Lección 6 - MCP Tools Invocados
+- [x] Lección 6 - AWS Documentation Recuperada
+- [x] Lección 6 - HITL Architecture Assessed
 
 #### Pendiente
 - [ ] Ejecución PBT Seguridad HITL
@@ -173,10 +181,12 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - [ ] Implementación de Infraestructura como Código
 - [ ] Componentes Lambda Principales
 - [ ] Flujo de Trabajo HITL
-- [ ] remediación de Servicio SSM
-- [ ] verificación de Salud
+- [ ] Remedición de Servicio SSM
+- [ ] Verificación de Salud
 - [ ] Sistema de Auditoría Completo
 - [ ] Demostración End-to-End Final
+- [ ] Lección 7
+- [ ] Entrega del Examen Final
 
 **Fase Actual**: Desarrollo MVP  
 **Objetivo**: Escenario único de remediación completa (reinicio de servicio crítico)
@@ -187,8 +197,8 @@ SRE Copilot reduce esta carga cognitiva y operativa mientras preserva la autorid
 - ✅ Diagnóstico asistido por IA mediante Bedrock
 - ✅ Evaluación de riesgo e identificación de Runbooks SSM
 - ✅ Flujo de trabajo de aprobación HITL con gestión de tiempo de espera
-- ✅ remediación a nivel de servicio mediante SSM (no reinicio de instancia)
-- ✅ verificación de salud independiente
+- ✅ Remedición a nivel de servicio mediante SSM (no reinicio de instancia)
+- ✅ Verificación de salud independiente
 - ✅ Traza de auditoría inmutable (retención de 30 días MVP)
 
 ## Lecciones de Kiro University
@@ -233,7 +243,7 @@ Implementadas Pruebas Basadas en Propiedades (PBT) para funciones del Risk Engin
    - **Casos**: 100 generados, 100 pasados, 0 fallados
 
 2. **PBT-002: Independencia de Confianza de IA**
-   - **Invariante**: Cambiar la Confianza de IA sola NO DEBE cambiar el Riesgo de remediación
+   - **Invariante**: Cambiar la Confianza de IA sola NO DEBE cambiar el Riesgo de Remedición
    - **Estado**: EXECUTED_PASS
    - **Casos**: 100 generados, 100 pasados, 0 fallados
 
@@ -247,14 +257,14 @@ Implementadas Pruebas Basadas en Propiedades (PBT) para funciones del Risk Engin
    - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
 
 5. **PBT-005: Éxito de Ejecución No Es Recuperación**
-   - **Invariante**: ÉXITO SSM + verificación de Salud != ÉXITO => estado != RESOLVED
+   - **Invariante**: ÉXITO SSM + Verificación de Salud != ÉXITO => estado != RESOLVED
    - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
 
-6. **PBT-006: resolución Requiere Recuperación Verificada**
-   - **Invariante**: RESOLVED => ÉXITO de verificación de Salud
+6. **PBT-006: Resolución Requiere Recuperación Verificada**
+   - **Invariante**: RESOLVED => ÉXITO de Verificación de Salud
    - **Estado**: EXECUTION_PENDING_IMPLEMENTATION
 
-7. **PBT-007: remediación de Servicio Idempotente**
+7. **PBT-007: Remedición de Servicio Idempotente**
    - **Invariante**: remediar(remediar(estado)) == remediar(estado)
    - **Estado**: EXECUTION_DEFERRED
 
@@ -265,6 +275,149 @@ Implementadas Pruebas Basadas en Propiedades (PBT) para funciones del Risk Engin
 - **Pasados**: 200
 - **Fallados**: 0
 - **Contrajemplos**: 0
+
+### Lección 5 - Kiro Powers
+
+**Estado**: ✅ Completado
+
+SRE Copilot usa Kiro Powers para cargar conocimiento especializado y guía dinámicamente según el contexto de la conversación.
+
+#### AWS Step Functions Power
+
+- **Identificador Power**: `aws-step-functions`
+- **Power instalada**: YES
+- **Power activada bajo demanda**: YES
+- **Contexto especializado cargado**: YES
+- **Aplicado a SRE Copilot**: YES
+
+La Power se activó mientras se revisaba la arquitectura de orquestación Human-in-the-Loop (HITL). El contexto relevante de activación incluyó:
+- AWS Step Functions
+- state machine
+- workflow
+- orchestration
+- Human-in-the-Loop
+
+La Power contribuyó con guía especializada relacionada con:
+- Orquestación de Step Functions
+- Patrones de callback
+- Task Tokens
+- waitForTaskToken
+- Ramificación APPROVE / REJECT / TIMEOUT
+- Retry y Catch
+- Manejo de errores de workflow
+- Integraciones de servicio
+
+**Nota de Seguridad**: Task Tokens son credenciales sensibles de callback y deben:
+- nunca aparecer en logs
+- nunca aparecer en interfaces orientadas al usuario
+- nunca ser expuestas a través de eventos EventBridge
+- ser accesibles solo por el componente de callback autorizado
+- permanecer correlacionados de forma segura con la solicitud de aprobación y la ejecución del workflow
+- permanecer protegidos en reposo si se persisten
+
+El mecanismo exacto de persistencia sigue la arquitectura de seguridad aprobada de SRE Copilot.
+
+**Evidencia**: [docs/kiro-university/lesson-5-powers.md](./docs/kiro-university/lesson-5-powers.md)
+
+### Lección 6 - Model Context Protocol (MCP)
+
+**Estado**: ✅ Completado
+
+SRE Copilot usa un servidor AWS Documentation MCP a nivel de espacio de trabajo para proporcionar a Kiro acceso a herramientas y recursos especializados externos de documentación AWS.
+
+#### Configuración MCP
+
+- **MCP server**: `aws-docs`
+- **Ámbito de configuración**: WORKSPACE
+- **Archivo de configuración**: `.kiro/settings/mcp.json`
+- **Server conectado**: YES
+- **Herramientas/recursos descubiertos**: YES
+
+#### Herramientas Descubiertas
+
+- `search_aws_documentation`
+- `get_aws_documentation`
+- `list_aws_services`
+
+#### Herramientas MCP Reales Invocadas
+
+- `search_aws_documentation`
+- `get_aws_documentation`
+
+#### Demostración MCP Real
+
+AWS Documentation MCP se utilizó para una tarea real de investigación arquitectónica de SRE Copilot:
+
+**Tema de investigación**: AWS Step Functions callback integration pattern para Human-in-the-Loop approval
+
+La investigación asistida por MCP cubrió:
+- callback con Task Token
+- waitForTaskToken
+- Contexto Task Token
+- SendTaskSuccess
+- SendTaskFailure
+- Comportamiento de timeout
+- Seguridad de callback
+- Permisos IAM para finalización de callback
+
+La información obtenida del MCP se comparó con la arquitectura existente de HITL de SRE Copilot.
+
+**Resultado verificado de la arquitectura**: Architecture consistency: PASS
+
+#### Verificación de Arquitectura
+
+La documentación AWS confirmó:
+
+**APPROVE**
+-> remediación permitida
+
+**REJECT**
+-> REMEDIATION_REJECTED
+-> NO SSM EXECUTION
+
+**TIMEOUT**
+-> TIMEOUT_EXCEEDED
+-> NO SSM EXECUTION
+
+El invariante crítico **REJECT => NO SSM** se mantiene.
+
+**Nota**: REJECT es una decisión válida de negocio/flujo de trabajo devuelta a través de la ruta de callback controlada. Después de la finalización del callback, Step Functions evalúa la decisión de aprobación y ramifica apropiadamente. SendTaskSuccess y SendTaskFailure son APIs de callback, pero la implementación final puede usarlas según las semánticas de flujo de trabajo y fallo técnico.
+
+**Seguridad**: La demostración MCP fue de solo lectura.
+
+- AWS resources modified: NO
+- CloudFormation executed: NO
+- SSM remediation executed: NO
+- Secrets stored in mcp.json: NO
+- Wildcard auto-approval: NO
+
+**Evidencia**: [docs/kiro-university/lesson-6-mcp.md](./docs/kiro-university/lesson-6-mcp.md)
+
+## Lecciones de Kiro University: Powers vs MCP
+
+### Lección 5 - Kiro Power
+
+**Flujo**: Contexto de conversación → Power relevante detectada → Conocimiento especializado cargado bajo demanda → Guía arquitectónica de SRE Copilot
+
+Las Powers proporcionan conocimiento contextual especializado y flujos de trabajo sobre la marcha según el contexto de conversación.
+
+### Lección 6 - MCP
+
+**Flujo**: Pregunta técnica de SRE Copilot → Kiro → aws-docs MCP → Invocación de herramienta MCP externa → Recuperación de documentación AWS → Evaluación arquitectónica con base en la documentación
+
+MCP proporciona herramientas, prompts y recursos externos que Kiro puede invocar activamente.
+
+## Flujo de Evidencia del Día 3
+
+Arquitectura HITL de SRE Copilot
+→ AWS Step Functions Power se activa
+→ Guía Step Functions especializada se carga
+→ AWS Documentation MCP invocado
+→ Documentación AWS oficial recuperada
+→ Arquitectura HITL evaluada
+→ Architecture consistency: PASS
+
+Esto demuestra cómo Powers y MCP se complementan dentro de un flujo de trabajo de proyecto real.
 
 ## Comenzando
 
