@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "name": "sre-copilot-power",
+  "description": "Human-Governed Autonomous Incident Remediation using AI diagnosis, policy evaluation, Human-in-the-Loop approval, verification, and auditability",
+  "author": "José Ramones",
+  "keywords": [
+    "sre",
+    "incident",
+    "operations",
+    "aiops",
+    "step-functions",
+    "task-token",
+    "human-in-the-loop",
+    "hitl",
+    "aws",
+    "remediation",
+    "audit",
+    "verification",
+    "policy",
+    "risk",
+    "observability"
+  ],
+  "activationContext": [
+    "incident response",
+    "SRE",
+    "HITL",
+    "Step Functions",
+    "Task Token",
+    "verification",
+    "risk assessment",
+    "AWS operations"
+  ],
+  "skills": [
+    "hitl-review"
+  ],
+  "steering": [
+    "steering/security.md"
+  ],
+  "resources": [
+    "README.md",
+    "examples/hitl-workflow.md"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-1650150981120",
+  "timestamp": "2026-09-26T01:10:37.406969",
+  "actor": "IncidentManager",
+  "action": "STATE_TRANSITION",
+  "details": {
+    "from": "CREATED",
+    "to": "EVIDENCE_COLLECTED"
+  },
+  "incident_id": "inc-1d492abf8616"
+}

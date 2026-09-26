@@ -1,0 +1,82 @@
+{
+  "version": "v1",
+  "agent": {
+    "name": "sre-copilot-architect",
+    "description": "SRE Copilot Architecture Agent - Architecture review, HITL validation, security boundary enforcement, MCP-assisted AWS validation, and Step Functions workflow review",
+    "purpose": "Architecture review, HITL validation, security boundary enforcement, MCP-assisted AWS validation, and Step Functions workflow review"
+  },
+  "includePowers": true,
+  "includeMcpJson": true,
+  "loadProjectContext": true,
+  "useSteeringAsPrimary": true,
+  "resources": [
+    ".kiro/steering/",
+    ".kiro/specs/sre-copilot-hitl/",
+    "README.md",
+    "README.es.md"
+  ],
+  "securityInvariant": "AI recommends. Policy evaluates. Human authorizes. Automation executes. System verifies. Audit records.",
+  "securityConstraints": [
+    "Never allow state-changing remediation before explicit human approval",
+    "Always enforce the architectural safety invariant",
+    "Validate that AI components cannot execute state-changing operations",
+    "Verify HITL approval boundary is never bypassed",
+    "Confirm Task Token callback pattern is properly implemented"
+  ],
+  "powers": {
+    "aws-step-functions": {
+      "keywords": ["step functions", "state machine", "serverless", "jsonata", "asl", "amazon states language", "workflow", "orchestration"],
+      "purpose": "Step Functions workflow review, callback pattern validation, Task Token pattern verification"
+    },
+    "aws-observability": {
+      "keywords": ["cloudwatch", "logs", "metrics", "traces", "alarms", "monitoring", "observability"],
+      "purpose": "Observability gap analysis, logging validation, metrics instrumentation review"
+    },
+    "aws-devops-agent": {
+      "keywords": ["devops", "investigation", "incident", "troubleshoot", "root-cause", "architecture", "review"],
+      "purpose": "Architecture review, incident investigation, operational intelligence"
+    },
+    "iam-policy-autopilot-power": {
+      "keywords": ["IAM", "policy", "policies", "identity", "permission", "access"],
+      "purpose": "IAM policy validation, least-privilege verification, permission boundary enforcement"
+    },
+    "aws-sam": {
+      "keywords": ["aws", "sam", "serverless", "lambda", "cloudformation", "deployment"],
+      "purpose": "Serverless deployment validation, SAM template review"
+    }
+  },
+  "mcp": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "purpose": "AWS documentation validation, API reference lookup, service integration verification"
+    }
+  },
+  "validationTasks": {
+    "hitrApprovalValidation": {
+      "tasks": [
+        "Verify APPROVE path allows remediation",
+        "Verify REJECT path returns REMEDIATION_REJECTED with NO SSM",
+        "Verify TIMEOUT path returns TIMEOUT_EXCEEDED with NO SSM",
+        "Verify REJECT => NO SSM invariant",
+        "Verify TIMEOUT => NO SSM invariant"
+      ]
+    },
+    "securityBoundaryValidation": {
+      "tasks": [
+        "Verify AI Diagnosis Engine has NO SSM permissions",
+        "Verify Policy/Risk Engine has NO execution permissions",
+        "Verify Execution Engine has NO diagnostic permissions",
+        "Verify IAM role separation is enforced"
+      ]
+    },
+    "stepFunctionsValidation": {
+      "tasks": [
+        "Verify Step Functions orchestration pattern",
+        "Verify Task Token callback pattern implementation",
+        "Verify waitForTaskToken integration",
+        "Verify error handling with Retry and Catch"
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "description": "AWS Documentation MCP Integration for SRE Copilot Power",
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    }
+  },
+  "usageGuidance": "Use the aws-docs MCP server for AWS-specific validation, particularly for Step Functions callback patterns, Task Token API reference, and service integration patterns.",
+  "note": "This configuration does not contain any credentials, tokens, or secrets. The aws-docs MCP server provides read-only AWS documentation."
+}
