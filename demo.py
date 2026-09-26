@@ -6,7 +6,9 @@ Tests the local incident pipeline without AWS dependencies.
 This script demonstrates:
 1. Alert ingestion from local source
 2. Incident creation and lifecycle management
-3. Audit event logging
+3. Evidence collection
+4. AI diagnosis generation
+5. Audit event logging
 """
 
 import sys
@@ -17,6 +19,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from alert_ingestion import LocalAlertProvider
 from incident_manager import LocalIncidentManager
+from evidence_collection import LocalEvidenceCollectionProvider
+from diagnosis_engine import LocalDiagnosisProvider
 from audit import LocalAuditLogger
 from shared.models import Incident
 
@@ -75,7 +79,7 @@ def demo_incident_manager(incident):
     retrieved = manager.get_incident(incident.incident_id)
     print(f"✓ Retrieved incident: {retrieved.service} - {retrieved.status}")
     
-    # Transition to next state
+    # Transition to evidence collected state
     success, updated, error = manager.transition_incident(
         incident.incident_id,
         Incident.EVIDENCE_COLLECTED
@@ -88,7 +92,49 @@ def demo_incident_manager(incident):
     return updated
 
 
-def demo_audit_logging(incident):
+def demo_evidence_collection(incident):
+    """Demonstrate evidence collection workflow"""
+    print_section("EVIDENCE COLLECTION")
+    
+    provider = LocalEvidenceCollectionProvider()
+    
+    # Collect evidence
+    success, evidence, error = provider.collect_evidence(incident)
+    if success:
+        print(f"✓ Evidence collected: {len(evidence['logs'])} log entries")
+        print(f"✓ Evidence type: {evidence['evidence_type']}")
+        print(f"✓ Service metadata: {evidence['metadata']['service_name']}")
+    else:
+        print(f"✗ Evidence collection failed: {error}")
+        return None
+    
+    return evidence
+
+
+def demo_diagnosis_engine(incident, evidence_package):
+    """Demonstrate diagnosis engine workflow"""
+    print_section("DIAGNOSIS ENGINE")
+    
+    provider = LocalDiagnosisProvider()
+    
+    # Analyze incident
+    success, diagnosis, error = provider.analyze(incident, evidence_package)
+    if success:
+        diag = diagnosis['diagnosis']
+        print(f"✓ Diagnosis generated:")
+        print(f"  - Summary: {diag['summary']}")
+        print(f"  - Confidence: {diag['confidence']}")
+        print(f"  - Root cause: {diag['root_cause']['cause_type']}")
+        print(f"  - Recommended action: {diag['recommended_action']}")
+        print(f"  - Evidence: {len(diag['evidence'])} data points")
+    else:
+        print(f"✗ Diagnosis failed: {error}")
+        return None
+    
+    return diagnosis
+
+
+def demo_audit_logging(incident, evidence_package, diagnosis):
     """Demonstrate audit event logging"""
     print_section("AUDIT LOGGER")
     
@@ -104,12 +150,12 @@ def demo_audit_logging(incident):
         {
             'actor': 'EvidenceCollection',
             'action': 'EVIDENCE_COLLECTED',
-            'details': {'source': 'CloudWatch', 'log_count': 5}
+            'details': {'source': 'CloudWatch', 'log_count': evidence_package['total_log_lines']}
         },
         {
-            'actor': 'IncidentManager',
-            'action': 'STATE_TRANSITION',
-            'details': {'from': Incident.CREATED, 'to': Incident.EVIDENCE_COLLECTED}
+            'actor': 'DiagnosisEngine',
+            'action': 'DIAGNOSIS_GENERATED',
+            'details': {'summary': diagnosis['diagnosis']['summary'], 'confidence': diagnosis['diagnosis']['confidence']}
         }
     ]
     
@@ -117,7 +163,7 @@ def demo_audit_logging(incident):
         from shared.models import AuditEvent
         
         audit_event = AuditEvent(
-            event_id=f"evt-{id(event_data)}",
+            event_id=f"evt-{hash(str(event_data))}",
             timestamp=incident.timestamp,
             actor=event_data['actor'],
             action=event_data['action'],
@@ -140,6 +186,8 @@ def main():
     print("=" * 60)
     print("  SRE Copilot MVP Demo - Local Incident Pipeline")
     print("=" * 60)
+    print("  Sprint 2: Evidence Collection + Diagnosis Engine")
+    print("=" * 60)
     
     try:
         # Run demo steps
@@ -147,12 +195,16 @@ def main():
         if incident:
             incident = demo_incident_manager(incident)
             if incident:
-                demo_audit_logging(incident)
+                evidence = demo_evidence_collection(incident)
+                if evidence:
+                    diagnosis = demo_diagnosis_engine(incident, evidence)
+                    if diagnosis:
+                        demo_audit_logging(incident, evidence, diagnosis)
         
         print_section("DEMO COMPLETE")
         print("✓ All components working locally")
         print("✓ No AWS dependencies required")
-        print("\nNext steps: Implement Diagnosis Engine and Risk Assessment")
+        print("\nNext steps: Implement Risk Assessment and HITL Approval")
         
     except Exception as e:
         print(f"\n✗ Demo failed with error: {e}")

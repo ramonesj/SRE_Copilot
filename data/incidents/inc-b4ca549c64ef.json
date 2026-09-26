@@ -1,0 +1,17 @@
+{
+  "incident_id": "inc-b4ca549c64ef",
+  "service": "nginx",
+  "severity": "critical",
+  "message": "Connection timeout - service unresponsive",
+  "status": "EVIDENCE_COLLECTED",
+  "region": "us-east-1",
+  "instance_id": "i-1234567890abcdef0",
+  "timestamp": "2026-09-26T01:19:06.157313",
+  "diagnosis": null,
+  "confidence": null,
+  "root_cause": null,
+  "risk_score": null,
+  "ssm_runbook": null,
+  "execution_result": null,
+  "verification_result": null
+}

@@ -1,0 +1,64 @@
+{
+  "incident_id": "inc-b4ca549c64ef",
+  "collected_at": "2026-09-26T01:19:06.158162",
+  "logs": [
+    {
+      "timestamp": "2026-09-26T01:19:01",
+      "level": "INFO",
+      "message": "Connection from 192.168.1.100 accepted",
+      "service": "nginx",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T01:19:02",
+      "level": "ERROR",
+      "message": "Connection timeout after 30s",
+      "service": "nginx",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T01:19:03",
+      "level": "ERROR",
+      "message": "upstream timed out (110: Connection timed out)",
+      "service": "nginx",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T01:19:04",
+      "level": "CRITICAL",
+      "message": "worker process crashed",
+      "service": "nginx",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T01:19:05",
+      "level": "ERROR",
+      "message": "restarting worker process",
+      "service": "nginx",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    }
+  ],
+  "metadata": {
+    "service_name": "nginx",
+    "instance_id": "i-1234567890abcdef0",
+    "region": "us-east-1",
+    "severity": "critical",
+    "error_message": "Connection timeout - service unresponsive",
+    "environment": "development",
+    "tags": [
+      "critical",
+      "service-outage"
+    ],
+    "related_services": [
+      "backend-api",
+      "cache-redis"
+    ]
+  },
+  "evidence_type": "cloudwatch_logs",
+  "total_log_lines": 5
+}
