@@ -1,6 +1,15 @@
 # SRE Copilot 🚀
 ## Autonomous Incident Remediation with Human Governance & SRE Observability
 
+<div align="center">
+
+![SRE Copilot Logo](./logo%20kiro/logo.png)
+
+**Realizado por José Ramones**  
+**Última Fecha de Actualización: 2026/09/27 4:16 a.m.**
+
+</div>
+
 <!-- Language Selector -->
 <div align="right">
   <strong>English</strong> | <a href="./README.es.md">Español</a>

@@ -1,6 +1,15 @@
 # SRE Copilot 🚀
 ## Remedio Autónomo de Incidentes con Gobernanza Humana y Observabilidad SRE
 
+<div align="center">
+
+![Logotipo SRE Copilot](./logo%20kiro/logo.png)
+
+**Realizado por José Ramones**  
+**Última Fecha de Actualización: 2026/09/27 4:16 a.m.**
+
+</div>
+
 <!-- Navegación de Idioma -->
 <div align="right">
   <a href="./README.md">English</a> | <strong>Español</strong>
