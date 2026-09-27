@@ -1,0 +1,15 @@
+{
+  "event_id": "evt--4388712076019590509",
+  "timestamp": "2026-09-26T03:39:08.974843",
+  "actor": "HealthVerification",
+  "action": "HEALTH_CHECK_EXECUTED",
+  "details": {
+    "check_id": "check-ed5588",
+    "method": "ENDPOINT_CHECK",
+    "status": "UNHEALTHY",
+    "duration_seconds": 0.9757397174835205,
+    "check_number": 2,
+    "total_checks": 2
+  },
+  "incident_id": "inc-33bdfa0b683c"
+}

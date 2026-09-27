@@ -1,0 +1,26 @@
+{
+  "incident_id": "inc-9c2eafc82e60",
+  "generated_at": "2026-09-27T08:06:52.128868",
+  "diagnosis": {
+    "summary": "Service crash detected",
+    "confidence": 0.92,
+    "root_cause": {
+      "cause_type": "service_crash",
+      "description": "nginx process terminated unexpectedly"
+    },
+    "evidence": [
+      "worker process crashed",
+      "restarting worker process",
+      "Connection timeout"
+    ],
+    "recommended_action": "restart_service"
+  },
+  "evidence_summary": {
+    "total_logs": 5,
+    "error_count": 4,
+    "error_levels": {
+      "ERROR": 3,
+      "CRITICAL": 1
+    }
+  }
+}

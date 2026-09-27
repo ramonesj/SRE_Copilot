@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-aec70657-b76e-486f-af79-a69690c0ed2c",
+  "timestamp": "2026-09-27T08:06:49.803847",
+  "actor": "DiagnosisEngine",
+  "action": "DIAGNOSIS_GENERATED",
+  "details": {
+    "summary": "Service crash detected",
+    "confidence": 0.92
+  },
+  "incident_id": "inc-f7fdb394606d"
+}

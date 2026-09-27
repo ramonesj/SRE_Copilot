@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sre_copilot_postgres
+    environment:
+      POSTGRES_USER: sre_user
+      POSTGRES_PASSWORD: sre_password
+      POSTGRES_DB: sre_copilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sre_user -d sre_copilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sre_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sre_copilot_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://sre_user:sre_password@postgres:5432/sre_copilot
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-this-in-production}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/storage:/app/storage
+    networks:
+      - sre_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sre_copilot_frontend
+    ports:
+      - "3000:4173"
+    depends_on:
+      - backend
+    networks:
+      - sre_network
+
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: sre_copilot_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - sre_network
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: sre_copilot_grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - sre_network
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+networks:
+  sre_network:
+    driver: bridge

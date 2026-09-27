@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-9ea87a4e-5038-4fdc-a9b2-e072252803d1",
+  "timestamp": "2026-09-26T06:42:49.789177",
+  "actor": "RiskAssessment",
+  "action": "RISK_ASSESSED",
+  "details": {
+    "remediation_risk": 52.5,
+    "classification": "MEDIUM"
+  },
+  "incident_id": "inc-ca68c95d6f5b"
+}

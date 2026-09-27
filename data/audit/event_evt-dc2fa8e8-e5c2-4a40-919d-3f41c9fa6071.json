@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-dc2fa8e8-e5c2-4a40-919d-3f41c9fa6071",
+  "timestamp": "2026-09-26T15:08:01.828565",
+  "actor": "HITLApproval",
+  "action": "APPROVAL_REQUESTED",
+  "details": {
+    "approval_request_id": "req-24df1bf3553b",
+    "decision": "REJECTED"
+  },
+  "incident_id": "inc-6b0e6b8dafe6"
+}

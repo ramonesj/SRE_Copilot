@@ -1,0 +1,13 @@
+{
+  "event_id": "evt-fcdde5f3-6cba-4310-8480-a43ae8a117c5",
+  "timestamp": "2026-09-26T06:42:49.922560",
+  "actor": "SSMExecution",
+  "action": "EXECUTION_COMPLETED",
+  "details": {
+    "execution_id": "exec-cae5174e7222",
+    "runbook_name": "SRE-Copilot-ServiceRestart",
+    "status": "SUCCESS",
+    "retry_count": 0
+  },
+  "incident_id": "inc-be3eb381621a"
+}

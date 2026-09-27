@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Error - SRE Copilot{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="bi bi-exclamation-triangle-fill display-4"></i>
+                </div>
+                <div class="card-body text-center py-5">
+                    <h2 class="mb-3">
+                        {% if error_code == 404 %}
+                            Page Not Found
+                        {% elif error_code == 403 %}
+                            Access Denied
+                        {% elif error_code == 500 %}
+                            Internal Server Error
+                        {% else %}
+                            Error Occurred
+                        {% endif %}
+                    </h2>
+                    
+                    <p class="text-muted mb-4">
+                        {% if error_message %}
+                            {{ error_message }}
+                        {% else %}
+                            Something went wrong. Please try again or contact support if the problem persists.
+                        {% endif %}
+                    </p>
+                    
+                    {% if error_details %}
+                    <div class="alert alert-light text-start mb-4">
+                        <strong>Details:</strong>
+                        <pre class="mb-0 small">{{ error_details }}</pre>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="/" class="btn btn-primary">
+                            <i class="bi bi-house me-2"></i>
+                            Return to Dashboard
+                        </a>
+                        <a href="/simulate" class="btn btn-secondary">
+                            <i class="bi bi-play-circle me-2"></i>
+                            New Simulation
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted py-3">
+                    <small>
+                        Error Code: {{ error_code|default('Unknown') }} | 
+                        <a href="#" onclick="history.back(); return false;">Go Back</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

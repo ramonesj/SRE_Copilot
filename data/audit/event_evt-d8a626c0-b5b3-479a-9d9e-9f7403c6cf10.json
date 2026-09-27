@@ -1,0 +1,15 @@
+{
+  "event_id": "evt-d8a626c0-b5b3-479a-9d9e-9f7403c6cf10",
+  "timestamp": "2026-09-26T05:21:56.189275",
+  "actor": "HealthVerification",
+  "action": "VERIFICATION_COMPLETED",
+  "details": {
+    "verification_id": "ver-3c85c936",
+    "success": true,
+    "overall_status": "HEALTHY",
+    "confidence_score": 0.9308579905282494,
+    "checks_performed": 2,
+    "retry_count": 0
+  },
+  "incident_id": "inc-c753217ef8d6"
+}

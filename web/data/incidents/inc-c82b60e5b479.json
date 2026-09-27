@@ -1,0 +1,17 @@
+{
+  "incident_id": "inc-c82b60e5b479",
+  "service": "custom",
+  "severity": "high",
+  "message": "custom failure",
+  "status": "RISK_ASSESSED",
+  "region": null,
+  "instance_id": null,
+  "timestamp": "2026-09-26T18:31:47.650783",
+  "diagnosis": null,
+  "confidence": null,
+  "root_cause": null,
+  "risk_score": null,
+  "ssm_runbook": null,
+  "execution_result": null,
+  "verification_result": null
+}

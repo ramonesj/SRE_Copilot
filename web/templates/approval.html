@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2><i class="bi bi-hand-index-thumb"></i> Approval Required</h2>
+<div class="security-boundary"><i class="bi bi-shield-exclamation"></i> <strong>Security Boundary:</strong> All state-changing operations require explicit human approval.</div>
+
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-info-circle"></i> Incident</div>
+    <div class="card-body">
+        <p><strong>ID:</strong> <code>{{ incident.incident_id }}</code></p>
+        <p><strong>Service:</strong> {{ incident.service }}</p>
+        <p><strong>Severity:</strong> <span class="badge bg-{{ 'danger' if incident.severity == 'critical' else 'warning' }}">{{ incident.severity }}</span></p>
+    </div>
+</div>
+
+{% if diagnosis %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-cpu"></i> AI Recommendation</div>
+    <div class="card-body">
+        <p><strong>Diagnosis:</strong> {{ diagnosis.diagnosis.summary }}</p>
+        <p><strong>Confidence:</strong> {{ (diagnosis.diagnosis.confidence * 100)|round(1) }}%</p>
+        <p><strong>Action:</strong> {{ diagnosis.diagnosis.recommended_action }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% if risk %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-exclamation-triangle"></i> Risk</div>
+    <div class="card-body">
+        <p><strong>Score:</strong> <span class="risk-{{ risk.risk_classification.lower() }}">{{ risk.remediation_risk }} ({{ risk.risk_classification }})</span></p>
+        <p><strong>Runbook:</strong> <code>{{ risk.ssm_runbook }}</code></p>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-hand-index-thumb"></i> Your Decision</div>
+    <div class="card-body">
+        <form method="post" action="/approve/{{ incident.incident_id }}/decision">
+            <div class="approval-buttons">
+                <button type="submit" name="decision" value="APPROVE" class="btn btn-success" onclick="return confirm('Approve remediation?')"><i class="bi bi-check-circle"></i> APPROVE</button>
+                <button type="submit" name="decision" value="REJECT" class="btn btn-danger" onclick="return confirm('Reject remediation?')"><i class="bi bi-x-circle"></i> REJECT</button>
+            </div>
+        </form>
+        <p class="text-center text-muted mt-3"><small><i class="bi bi-info-circle"></i> REJECT blocks SSM execution</small></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{
+  "incident_id": "inc-c82b60e5b479",
+  "collected_at": "2026-09-26T18:31:47.647920",
+  "logs": [
+    {
+      "timestamp": "2026-09-26T18:31:42",
+      "level": "INFO",
+      "message": "Connection from 192.168.1.100 accepted",
+      "service": "custom",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T18:31:43",
+      "level": "ERROR",
+      "message": "Connection timeout after 30s",
+      "service": "custom",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T18:31:44",
+      "level": "ERROR",
+      "message": "upstream timed out (110: Connection timed out)",
+      "service": "custom",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T18:31:45",
+      "level": "CRITICAL",
+      "message": "worker process crashed",
+      "service": "custom",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    },
+    {
+      "timestamp": "2026-09-26T18:31:46",
+      "level": "ERROR",
+      "message": "restarting worker process",
+      "service": "custom",
+      "region": "us-east-1",
+      "source": "CloudWatch Logs"
+    }
+  ],
+  "metadata": {
+    "service_name": "custom",
+    "instance_id": "unknown",
+    "region": "us-east-1",
+    "severity": "high",
+    "error_message": "custom failure",
+    "environment": "development",
+    "tags": [
+      "critical",
+      "service-outage"
+    ],
+    "related_services": []
+  },
+  "evidence_type": "cloudwatch_logs",
+  "total_log_lines": 5
+}

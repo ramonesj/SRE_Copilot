@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Trail - SRE Copilot{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3">
+                <i class="bi bi-journal-text me-2"></i>
+                Audit Trail
+            </h1>
+            <p class="text-muted">
+                Complete immutable record of all incident decisions, approvals, and actions
+            </p>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-2">
+                    <form method="GET" class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Incident ID</label>
+                            <input type="text" class="form-control form-control-sm" name="incident_id" value="{{ request.query_params.get('incident_id', '') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Event Type</label>
+                            <select class="form-select form-select-sm" name="event_type">
+                                <option value="">All Events</option>
+                                <option value="INCIDENT_CREATED">Incident Created</option>
+                                <option value="DIAGNOSIS_COMPLETE">Diagnosis Complete</option>
+                                <option value="RISK_ASSESSED">Risk Assessed</option>
+                                <option value="APPROVAL_GRANTED">Approval Granted</option>
+                                <option value="APPROVAL_REJECTED">Approval Rejected</option>
+                                <option value="EXECUTION_STARTED">Execution Started</option>
+                                <option value="EXECUTION_SUCCESS">Execution Success</option>
+                                <option value="VERIFICATION_SUCCESS">Verification Success</option>
+                                <option value="INCIDENT_RESOLVED">Incident Resolved</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">Actor</label>
+                            <select class="form-select form-select-sm" name="actor">
+                                <option value="">All Actors</option>
+                                <option value="AlertIngestion">Alert Ingestion</option>
+                                <option value="DiagnosisEngine">Diagnosis Engine</option>
+                                <option value="RiskAssessment">Risk Assessment</option>
+                                <option value="HITLApproval">HITL Approval</option>
+                                <option value="SSMExecutor">SSM Executor</option>
+                                <option value="VerificationEngine">Verification Engine</option>
+                                <option value="IncidentManager">Incident Manager</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small mb-0">&nbsp;</label>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-filter me-1"></i>
+                                    Filter
+                                </button>
+                                <a href="{{ url_for('audit') }}" class="btn btn-secondary btn-sm">
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Event Timeline
+                    </h6>
+                    <span class="badge bg-light text-dark">{{ audit_events|length }} events</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if audit_events %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0" style="width: 180px;">Timestamp</th>
+                                    <th class="border-0" style="width: 120px;">Incident ID</th>
+                                    <th class="border-0" style="width: 150px;">Event Type</th>
+                                    <th class="border-0" style="width: 120px;">Actor</th>
+                                    <th class="border-0">Details</th>
+                                    <th class="border-0 text-center" style="width: 80px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in audit_events %}
+                                <tr>
+                                    <td>
+                                        <small class="text-muted">{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('incident_detail', incident_id=event.incident_id) }}" class="text-decoration-none">
+                                            <code>{{ event.incident_id[:12] }}...</code>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% set event_colors = {
+                                            'INCIDENT_CREATED': 'primary',
+                                            'EVIDENCE_COLLECTED': 'info',
+                                            'DIAGNOSIS_COMPLETE': 'info',
+                                            'RISK_ASSESSED': 'warning',
+                                            'APPROVAL_GRANTED': 'success',
+                                            'APPROVAL_REJECTED': 'danger',
+                                            'APPROVAL_TIMEOUT': 'warning',
+                                            'EXECUTION_STARTED': 'secondary',
+                                            'EXECUTION_SUCCESS': 'success',
+                                            'EXECUTION_FAILED': 'danger',
+                                            'VERIFICATION_SUCCESS': 'success',
+                                            'VERIFICATION_FAILED': 'danger',
+                                            'INCIDENT_RESOLVED': 'success',
+                                            'INCIDENT_REJECTED': 'danger',
+                                            'RECOVERY_FAILED': 'warning'
+                                        } %}
+                                        {% set color = event_colors.get(event.event_type, 'secondary') %}
+                                        <span class="badge bg-{{ color }}">
+                                            {{ event.event_type.replace('_', ' ') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>{{ event.actor }}</small>
+                                    </td>
+                                    <td>
+                                        {% if event.event_type == 'DIAGNOSIS_COMPLETE' %}
+                                            <small>
+                                                <strong>Diagnosis:</strong> {{ event.details.get('diagnosis', 'N/A') }}<br>
+                                                <strong>Confidence:</strong> {{ (event.details.get('confidence', 0) * 100)|int }}%
+                                            </small>
+                                        {% elif event.event_type == 'RISK_ASSESSED' %}
+                                            <small>
+                                                <strong>Risk Score:</strong> {{ event.details.get('risk_score', 'N/A') }}<br>
+                                                <strong>Runbook:</strong> {{ event.details.get('runbook_name', 'N/A') }}
+                                            </small>
+                                        {% elif event.event_type == 'APPROVAL_GRANTED' %}
+                                            <small>
+                                                <strong>Approver:</strong> {{ event.details.get('approver', 'N/A') }}<br>
+                                                <strong>Rationale:</strong> {{ event.details.get('rationale', 'N/A') }}
+                                            </small>
+                                        {% elif event.event_type == 'APPROVAL_REJECTED' %}
+                                            <small>
+                                                <strong>Rejector:</strong> {{ event.details.get('rejector', 'N/A') }}<br>
+                                                <strong>Reason:</strong> {{ event.details.get('reason', 'N/A') }}
+                                            </small>
+                                        {% elif event.event_type == 'EXECUTION_SUCCESS' %}
+                                            <small>
+                                                <strong>Execution ID:</strong> {{ event.details.get('execution_id', 'N/A')[:16] }}...<br>
+                                                <strong>Runbook:</strong> {{ event.details.get('runbook_name', 'N/A') }}
+                                            </small>
+                                        {% elif event.event_type == 'VERIFICATION_SUCCESS' %}
+                                            <small>
+                                                <strong>Service:</strong> {{ event.details.get('service_name', 'N/A') }}<br>
+                                                <strong>Status:</strong> <span class="text-success">Healthy</span>
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">{{ event.details }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#eventModal"
+                                                data-event='{{ event.to_json() | tojson | safe }}'>
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-4 text-muted"></i>
+                        <p class="text-muted mt-3">No audit events found</p>
+                        <a href="{{ url_for('simulate') }}" class="btn btn-primary">
+                            <i class="bi bi-play-circle me-2"></i>
+                            Create Test Incident
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="eventModalLabel">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Event Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="event-details-content">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const eventModal = document.getElementById('eventModal');
+    
+    eventModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const eventData = JSON.parse(button.getAttribute('data-event'));
+        
+        const content = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Event ID</label>
+                    <p class="mb-0"><code>${eventData.event_id || 'N/A'}</code></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Timestamp</label>
+                    <p class="mb-0">${eventData.timestamp || 'N/A'}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Incident ID</label>
+                    <p class="mb-0"><code>${eventData.incident_id || 'N/A'}</code></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Event Type</label>
+                    <p class="mb-0"><span class="badge bg-info">${eventData.event_type || 'N/A'}</span></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted">Actor</label>
+                    <p class="mb-0">${eventData.actor || 'N/A'}</p>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold text-muted">Full Details</label>
+                    <pre class="bg-dark text-light p-3 rounded"><code>${JSON.stringify(eventData.details || {}, null, 2)}</code></pre>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('event-details-content').innerHTML = content;
+    });
+});
+</script>
+{% endblock %}

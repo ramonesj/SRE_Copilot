@@ -1,0 +1,15 @@
+{
+  "approval_request_id": "req-4b5e22d6a377",
+  "incident_id": "inc-e54553c4f0be",
+  "created_at": "2026-09-27T06:58:02.478025",
+  "diagnosis_summary": "Service crash detected",
+  "confidence_score": 0.92,
+  "remediation_risk": 52.5,
+  "risk_classification": "MEDIUM",
+  "recommended_action": "restart_service",
+  "ssm_runbook": "SRE-Copilot-ServiceRestart",
+  "decision": "TIMEOUT",
+  "decision_at": "2026-09-27T06:58:02.478375",
+  "approver": "system",
+  "rationale": "Approval timeout exceeded"
+}

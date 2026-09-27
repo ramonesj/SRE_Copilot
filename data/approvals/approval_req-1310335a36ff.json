@@ -1,0 +1,15 @@
+{
+  "approval_request_id": "req-1310335a36ff",
+  "incident_id": "inc-ba380368a522",
+  "created_at": "2026-09-26T05:07:08.451341",
+  "diagnosis_summary": "Service crash detected",
+  "confidence_score": 0.92,
+  "remediation_risk": 52.5,
+  "risk_classification": "MEDIUM",
+  "recommended_action": "restart_service",
+  "ssm_runbook": "SRE-Copilot-ServiceRestart",
+  "decision": "APPROVED",
+  "decision_at": "2026-09-26T05:07:08.452246",
+  "approver": "system",
+  "rationale": "Automated approval for MVP"
+}

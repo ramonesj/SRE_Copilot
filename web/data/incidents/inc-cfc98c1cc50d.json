@@ -1,0 +1,17 @@
+{
+  "incident_id": "inc-cfc98c1cc50d",
+  "service": "nginx",
+  "severity": "critical",
+  "message": "nginx failure",
+  "status": "RISK_ASSESSED",
+  "region": null,
+  "instance_id": null,
+  "timestamp": "2026-09-26T19:29:20.817707",
+  "diagnosis": null,
+  "confidence": null,
+  "root_cause": null,
+  "risk_score": null,
+  "ssm_runbook": null,
+  "execution_result": null,
+  "verification_result": null
+}

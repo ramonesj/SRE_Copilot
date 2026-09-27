@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-38e81025-9fbd-486b-8259-525c483ec220",
+  "timestamp": "2026-09-26T15:08:01.828565",
+  "actor": "AlertIngestion",
+  "action": "INCIDENT_CREATED",
+  "details": {
+    "service": "nginx",
+    "severity": "critical"
+  },
+  "incident_id": "inc-6b0e6b8dafe6"
+}

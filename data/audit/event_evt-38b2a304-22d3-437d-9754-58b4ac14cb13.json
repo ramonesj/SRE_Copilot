@@ -1,0 +1,11 @@
+{
+  "event_id": "evt-38b2a304-22d3-437d-9754-58b4ac14cb13",
+  "timestamp": "2026-09-26T15:19:28.418771",
+  "actor": "EvidenceCollection",
+  "action": "EVIDENCE_COLLECTED",
+  "details": {
+    "source": "CloudWatch",
+    "log_count": 5
+  },
+  "incident_id": "inc-3e25cc86396b"
+}

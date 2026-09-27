@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="bi bi-speedometer2"></i> Incident Dashboard</h2>
+        <p class="text-muted">Real-time incident response monitoring</p>
+    </div>
+    <div class="col-auto">
+        <form method="post" action="/clear">
+            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Clear all demo data?')">
+                <i class="bi bi-trash"></i> Clear Demo
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total Incidents</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number text-primary">{{ stats.open }}</div>
+            <div class="stat-label">Open</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number text-success">{{ stats.resolved }}</div>
+            <div class="stat-label">Resolved</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number text-danger">{{ stats.rejected }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number text-warning">{{ stats.recovery_failed }}</div>
+            <div class="stat-label">Recovery Failed</div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card stat-card">
+            <div class="stat-number text-secondary">{{ stats.timeout }}</div>
+            <div class="stat-label">Timeout</div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Boundary Alert -->
+<div class="security-boundary">
+    <i class="bi bi-shield-exclamation"></i> <strong>Security Boundary:</strong> 
+    All state-changing operations require explicit human approval. AI components can ONLY recommend, NEVER execute.
+</div>
+
+<!-- Recent Incidents -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list-ul"></i> Recent Incidents
+    </div>
+    <div class="card-body">
+        {% if incidents %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Service</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for incident in incidents %}
+                    <tr class="incident-row">
+                        <td><code>{{ incident.incident_id[:12] }}...</code></td>
+                        <td><i class="bi bi-gear"></i> {{ incident.service }}</td>
+                        <td>
+                            {% if incident.severity == 'critical' %}
+                            <span class="badge bg-danger">{{ incident.severity }}</span>
+                            {% elif incident.severity == 'high' %}
+                            <span class="badge bg-warning">{{ incident.severity }}</span>
+                            {% else %}
+                            <span class="badge bg-info">{{ incident.severity }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if incident.status == 'RESOLVED' %}
+                            <span class="badge bg-success status-badge">{{ incident.status }}</span>
+                            {% elif incident.status == 'REJECTED' %}
+                            <span class="badge bg-danger status-badge">{{ incident.status }}</span>
+                            {% elif incident.status == 'RECOVERY_FAILED' %}
+                            <span class="badge bg-warning status-badge">{{ incident.status }}</span>
+                            {% elif incident.status == 'TIMEOUT_EXCEEDED' %}
+                            <span class="badge bg-secondary status-badge">{{ incident.status }}</span>
+                            {% else %}
+                            <span class="badge bg-primary status-badge">{{ incident.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ incident.timestamp.strftime('%Y-%m-%d %H:%M:%S') if incident.timestamp else 'N/A' }}</td>
+                        <td>
+                            <a href="/incident/{{ incident.incident_id }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+            <p class="mt-3">No incidents yet. <a href="/simulate">Simulate an incident</a> to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning"></i> Quick Actions
+            </div>
+            <div class="card-body">
+                <a href="/simulate" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Simulate New Incident
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

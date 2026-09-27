@@ -1,467 +1,267 @@
-# SRE Copilot
+# SRE Copilot 🚀
+## Autonomous Incident Remediation with Human Governance & SRE Observability
 
-## Human-Governed Autonomous Incident Remediation
-
-**AI diagnoses. Humans authorize. Automation remediates. Recovery is verified.**
-
-![SRE Copilot Hero](docs/assets/branding/sre-copilot-hero.png)
-
-## Executive Summary
-
-SRE Copilot is an AIOps/SRE platform designed to augment human operators with AI-powered analysis while maintaining human authority over production changes. The system follows a strict workflow that ensures safety, accountability, and verifiable recovery.
-
-### Core Workflow:
-1. **Detect** operational anomalies via AWS EventBridge
-2. **Create** structured incidents with technical evidence
-3. **Collect** comprehensive logs and telemetry
-4. **Diagnose** root causes using Amazon Bedrock (LLM)
-5. **Assess** remediation risk and operational impact
-6. **Pause** workflow for human authorization (HITL)
-7. **Execute** approved remediations via AWS Systems Manager
-8. **Verify** service recovery independently
-9. **Record** complete lifecycle in immutable audit trail
-
-## The Problem
-
-Traditional incident response in cloud environments requires SRE teams to manually correlate multiple data sources:
-- Real-time alerts from monitoring systems
-- Application and system logs
-- Infrastructure telemetry and metrics
-- Service dependencies and topology
-- Probable root causes and remediation options
-- Operational risk assessment and blast radius
-- Execution results and error handling
-- Post-remediation health verification
-
-This manual process is:
-- **Slow**: Hours spent identifying root causes during critical incidents
-- **Error-prone**: Manual analysis can miss subtle patterns or dependencies
-- **Inconsistent**: Different operators respond differently to similar incidents
-- **Non-scalable**: As cloud infrastructure grows, manual response becomes unsustainable
-- **Fatiguing**: Cognitive load leads to operator burnout and decreased effectiveness
-
-SRE Copilot reduces this cognitive and operational burden while preserving human authority over all state-changing actions.
-
-## Architectural Safety Invariant
-
-<div align="center">
-<h3>AI recommends.<br>Policy evaluates.<br>Human authorizes.<br>Automation executes.<br>System verifies.<br>Audit records.</h3>
+<!-- Language Selector -->
+<div align="right">
+  <strong>English</strong> | <a href="./README.es.md">Español</a>
 </div>
 
-### Critical Security Boundaries:
+<div align="center">
 
-1. **AI Diagnosis Engine MUST NOT directly modify infrastructure or invoke remediation**
-   - Bedrock access via IAM roles only (no secrets storage)
-   - Read-only permissions for evidence collection
-   - Zero execution permissions for state-changing operations
+> **AI Recommends. Policy Evaluates. Human Authorizes. Automation Executes. System Verifies. Audit Records.**
 
-2. **Policy/Risk Engine MUST NOT execute remediation**
-   - Risk assessment is read-only information gathering
-   - Execution is handled by a separate, authorized component
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&logoColor=white)](backend/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](frontend/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)](frontend/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)](backend/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](backend/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-MVP_Production_Ready-success.svg)](#)
 
-3. **Every state-changing operation MUST require explicit Human-in-the-Loop approval**
-   - No exceptions regardless of risk level or confidence score
-   - Configurable approval channels (Email/Slack/Teams)
-   - Timeout-based auto-rejection after configurable period
+</div>
 
-4. **Only the authorized Execution Engine may execute a previously approved remediation**
-   - Separate IAM role with least-privilege permissions
-   - Execution tokens are encrypted and never logged
-   - Idempotent SSM Runbooks designed for safe repeated execution
+---
 
-5. **Recovery must be independently verified before incident resolution**
-   - SSM execution success ≠ service recovery verified
-   - Health verification uses same monitoring as original detection
-   - Only verified recovery leads to RESOLVED status
+## 📑 Table of Contents
 
-## Key Features
+1. [Executive Overview](#-executive-overview)
+2. [Architectural Safety Invariants](#-architectural-safety-invariants)
+3. [Key Features & Capabilities](#-key-features--capabilities)
+   - [Mission Control & SLI/SLO Telemetry Bar](#1-mission-control--slislo-telemetry-bar)
+   - [Live Incident Injector & Real Pipeline](#2-live-incident-injector--real-pipeline)
+   - [Human-In-The-Loop (HITL) Approval Queue](#3-human-in-the-loop-hitl-approval-queue)
+   - [Automated SRE Post-Mortem Report Generator](#4-automated-sre-post-mortem-report-generator)
+   - [SSM Runbook Catalog & Dry-Run Simulator](#5-ssm-runbook-catalog--dry-run-simulator)
+   - [Target Fleet & Server Node Connection Hub](#6-target-fleet--server-node-connection-hub)
+   - [Enterprise Company Branding & Logo Customization](#7-enterprise-company-branding--logo-customization)
+4. [System Architecture](#-system-architecture)
+5. [Quick Start & Running Locally](#-quick-start--running-locally)
+6. [API Reference & Verification Endpoints](#-api-reference--verification-endpoints)
+7. [Kiro University Deliverables & Verification](#-kiro-university-deliverables--verification)
+8. [License](#-license)
 
-### 🚨 **Automated Incident Detection**
-- EventBridge integration for CloudWatch Alarms and custom events
-- Schema validation and deduplication
-- Automatic incident creation with unique identifiers
+---
 
-### 🔍 **AI-Assisted Root Cause Analysis**
-- Amazon Bedrock integration for log analysis and pattern recognition
-- Confidence scoring for diagnosis recommendations
-- Evidence-based root cause identification
+## 🌟 Executive Overview
 
-### ⚖️ **Risk-Aware Decision Support**
-- Operational impact assessment
-- Blast radius calculation
-- SSM Runbook identification and compatibility checking
+**SRE Copilot** is a state-of-the-art autonomous incident diagnosis and remediation platform designed for modern Site Reliability Engineering (SRE) and DevOps teams. 
 
-### 👥 **Human-in-the-Loop Approval**
-- Configurable approval channels (Email/Slack/Teams)
-- Task Token callback pattern for secure workflow resumption
-- Timeout management with auto-rejection
+Unlike black-box autonomous systems that execute unverified scripts directly against production nodes, SRE Copilot strictly enforces a **deterministic Human-in-the-Loop (HITL) governance model**. The AI analyzes logs and metrics to diagnose root causes and suggest AWS Systems Manager (SSM) runbooks, but **zero state changes occur** until an authorized human engineer approves the operation.
 
-### ⚡ **Safe Automation Execution**
-- Idempotent SSM Runbooks for service-level remediation
-- Execution status tracking and error handling
-- Secure token management (never logged)
-
-### ✅ **Independent Recovery Verification**
-- Post-execution health checks
-- Same monitoring source as original detection
-- Verification failure triggers recovery failed status
-
-### 📜 **Complete Audit Trail**
-- Immutable S3 storage with configurable retention
-- Structured JSON events with actor attribution
-- Compliance-ready logging for all lifecycle events
-
-## Technology Stack
-
-### Core AWS Services
-- **Amazon EventBridge**: Event ingestion and routing
-- **AWS Lambda**: Serverless compute for all application logic
-- **AWS Step Functions**: Workflow orchestration with HITL wait states
-- **Amazon Bedrock**: LLM-based diagnosis and analysis
-- **AWS Systems Manager (SSM)**: Runbook execution and automation
-- **Amazon S3**: Immutable audit trail storage
-- **Amazon CloudWatch**: Monitoring, logging, and health verification
-- **AWS IAM**: Role-based access control and permissions management
-
-### Development Stack
-- **Python 3.11+**: Primary Lambda runtime
-- **AWS CDK/CloudFormation**: Infrastructure as Code
-- **pytest**: Unit and integration testing
-- **GitHub Actions**: CI/CD pipeline automation
-
-## Project Status
-
-### Kiro University Progress
-
-#### Completed
-- [x] Project Definition
-- [x] Requirements
-- [x] Technical Design
-- [x] Implementation Tasks
-- [x] Steering Documents
-- [x] Kiro Hooks
-- [x] Lesson 3 Hook Demonstration
-- [x] PBT Properties Defined
-- [x] PBT-001 Risk Score Bounds Executed
-- [x] PBT-002 AI Confidence Independence Executed
-- [x] 200 Generated PBT Cases Passed
-- [x] Lesson 5 - AWS Step Functions Power Installed
-- [x] Lesson 5 - Power Activated On Demand
-- [x] Lesson 5 - Specialized Context Applied to SRE Copilot
-- [x] Lesson 6 - AWS Documentation MCP Configured
-- [x] Lesson 6 - MCP Server Connected
-- [x] Lesson 6 - MCP Tools Invoked
-- [x] Lesson 6 - AWS Documentation Retrieved
-- [x] Lesson 6 - HITL Architecture Assessed
-- [x] Lesson 7 - SRE Copilot Architect Custom Agent Created
-- [x] Lesson 7 - Power Configuration with MCP
-- [x] SPRINT 1 - Local MVP Implementation
-- [x] Alert Ingestion Module (Local Mock Provider)
-- [x] Incident Manager Module (Lifecycle Management)
-- [x] Audit Logger Module (Local File Storage)
-- [x] Data Models (Alert, Incident, AuditEvent)
-- [x] Demo Script Execution
-- [x] End-to-End Incident Pipeline Test
-
-#### Pending
-- [ ] HITL Safety PBT Execution
-- [ ] Recovery Lifecycle PBT Execution
-- [ ] Infrastructure as Code Implementation
-- [ ] AI Diagnosis Engine (Bedrock Integration)
-- [ ] Risk Assessment Engine
-- [ ] HITL Approval Service (Email/Slack/Teams)
-- [ ] SSM Executor Module
-- [ ] Health Verification Engine
-- [ ] Complete End-to-End Demo
-
-**Current Phase**: MVP Development  
-**Target**: Single complete remediation scenario (critical service restart)
-
-### Local MVP Progress (SPRINT 1)
-
-#### Completed
-- [x] Project structure under `src/` (no AWS dependencies)
-- [x] `src/shared/models.py` - Alert, Incident, AuditEvent dataclasses
-- [x] `src/alert_ingestion/local_provider.py` - Local alert ingestion
-- [x] `src/incident_manager/local_manager.py` - Incident lifecycle management
-- [x] `src/audit/local_logger.py` - Local audit event storage
-- [x] `demo.py` - End-to-end demonstration script
-- [x] Data persistence in `data/` directory
-- [x] Complete incident pipeline test
-
-#### Test Results
-```
-✓ Alert validated: nginx (critical)
-✓ Incident created: inc-1d492abf8616
-✓ Incident saved: inc-1d492abf8616
-✓ Retrieved incident: nginx - CREATED
-✓ State transition: EVIDENCE_COLLECTED
-✓ Logged: INCIDENT_CREATED by AlertIngestion
-✓ Logged: EVIDENCE_COLLECTED by EvidenceCollection
-✓ Logged: STATE_TRANSITION by IncidentManager
-✓ Retrieved 3 audit events for incident
+```mermaid
+flowchart LR
+    A[CloudWatch / Ingest] --> B[AI Diagnosis Engine]
+    B --> C[Risk Assessment Engine]
+    C --> D{HITL Approval Required}
+    D -- "Approved" --> E[SSM Execution Engine]
+    D -- "Rejected / Timeout" --> F[Workflow Terminated & Audited]
+    E --> G[Independent Health Verification]
+    G --> H[Immutable Audit Trail & Post-Mortem]
 ```
 
-#### Next Steps
-1. Implement AI Diagnosis Engine (local mock provider)
-2. Implement Risk Assessment Engine (local mock provider)
-3. Implement HITL Approval Service (local mock provider)
-4. Implement SSM Executor (local mock provider)
-5. Implement Health Verification Engine (local mock provider)
-
-### MVP Scope:
-- ✅ Critical service failure detection via CloudWatch Alarms
-- ✅ Incident creation and evidence collection
-- ✅ AI-assisted diagnosis via Bedrock
-- ✅ Risk assessment and SSM Runbook identification
-- ✅ HITL approval workflow with timeout management
-- ✅ Service-level remediation via SSM (not instance restart)
-- ✅ Independent health verification
-- ✅ Immutable audit trail (30-day retention MVP)
-
-## Kiro University Lessons
-
-### Lesson 3: Kiro Hooks for Quality Gates
-
-**Status**: ✅ Completed
-
-Implemented three Kiro hooks to enforce quality gates and security boundaries:
-
-#### Python Quality Gate Hook
-- **File**: `.kiro/hooks/python-quality-gate.json`
-- **Trigger**: `PostFileSave`
-- **Matcher**: `\.py$`
-- **Action Type**: `agent`
-- **Purpose**: Performs Python quality validation on files modified by Kiro. It checks syntax and available linting tools.
-
-#### Security Boundary Guard Hook
-- **File**: `.kiro/hooks/security-boundary-guard.json`
-- **Trigger**: `PreToolUse`
-- **Action Type**: `agent`
-- **Purpose**: Validates relevant agent operations against the SRE Copilot architectural safety invariant.
-
-#### Post Task Spec Validation Hook
-- **File**: `.kiro/hooks/post-task-validation.json`
-- **Trigger**: `PostTaskExecution`
-- **Action Type**: `agent`
-- **Purpose**: Validates completed Spec tasks against Requirements, Design, Steering, security constraints and relevant tests.
-
-### Lesson 4: Property-Based Testing
-
-**Status**: ✅ Completed
-
-Implemented Property-Based Testing (PBT) for core Risk Engine functions using Hypothesis.
-
-#### PBT Properties Defined: 7
-
-##### Executed Properties (2)
-1. **PBT-001: Risk Score Bounds**
-   - **Invariant**: `0 <= remediation_risk <= 100`
-   - **Status**: EXECUTED_PASS
-   - **Cases**: 100 generated, 100 passed, 0 failed
-
-2. **PBT-002: AI Confidence Independence**
-   - **Invariant**: Changing AI Confidence alone MUST NOT change Remediation Risk
-   - **Status**: EXECUTED_PASS
-   - **Cases**: 100 generated, 100 passed, 0 failed
-
-##### Pending Properties (5)
-3. **PBT-003: REJECT Safety Invariant**
-   - **Invariant**: REJECT => NO SSM
-   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
-
-4. **PBT-004: TIMEOUT Safety Invariant**
-   - **Invariant**: TIMEOUT => NO SSM
-   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
-
-5. **PBT-005: Execution Success Is Not Recovery**
-   - **Invariant**: SSM SUCCESS + Health Verification != SUCCESS => status != RESOLVED
-   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
-
-6. **PBT-006: Resolution Requires Verified Recovery**
-   - **Invariant**: RESOLVED => Health Verification SUCCESS
-   - **Status**: EXECUTION_PENDING_IMPLEMENTATION
-
-7. **PBT-007: Idempotent Service Remediation**
-   - **Invariant**: remediate(remediate(state)) == remediate(state)
-   - **Status**: EXECUTION_DEFERRED
-
-#### PBT Execution Summary
-- **Properties Defined**: 7
-- **Properties Executed**: 2
-- **Generated Cases**: 200
-- **Passed**: 200
-- **Failed**: 0
-- **Counterexamples**: 0
-
-### Lesson 5 - Kiro Powers
-
-**Status**: ✅ Completed
-
-SRE Copilot uses Kiro Powers to load specialized knowledge and guidance dynamically based on conversation context.
-
-#### AWS Step Functions Power
-
-- **Power identifier**: `aws-step-functions`
-- **Power installed**: YES
-- **Power activated on demand**: YES
-- **Specialized context loaded**: YES
-- **Applied to SRE Copilot**: YES
-
-The Power was activated while reviewing the Human-in-the-Loop (HITL) orchestration architecture. Relevant activation context included:
-- AWS Step Functions
-- state machine
-- workflow
-- orchestration
-- Human-in-the-Loop
-
-The Power contributed specialized guidance related to:
-- Step Functions orchestration
-- callback integration patterns
-- Task Tokens
-- waitForTaskToken
-- APPROVE / REJECT / TIMEOUT branching
-- Retry and Catch
-- workflow error handling
-- service integrations
-
-**Security Note**: Task Tokens are sensitive callback credentials and must:
-- never appear in logs
-- never appear in user-facing interfaces
-- never be exposed through EventBridge events
-- be accessible only by the authorized callback component
-- remain securely correlated with the approval request and workflow execution
-- remain protected at rest if persisted
-
-The exact persistence mechanism follows the approved SRE Copilot security architecture.
-
-**Evidence**: [docs/kiro-university/lesson-5-powers.md](./docs/kiro-university/lesson-5-powers.md)
-
-### Lesson 6 - Model Context Protocol (MCP)
-
-**Status**: ✅ Completed
-
-SRE Copilot uses a workspace-level AWS Documentation MCP server to give Kiro access to external specialized AWS documentation tools and resources.
-
-#### MCP Configuration
-
-- **MCP server**: `aws-docs`
-- **Configuration scope**: WORKSPACE
-- **Configuration file**: `.kiro/settings/mcp.json`
-- **Server connected**: YES
-- **Tools/resources discovered**: YES
-
-#### Tools Discovered
-
-- `search_aws_documentation`
-- `get_aws_documentation`
-- `list_aws_services`
-
-#### Actual MCP Tools Invoked
-
-- `search_aws_documentation`
-- `get_aws_documentation`
-
-#### Real MCP Demonstration
-
-AWS Documentation MCP was used for a real SRE Copilot architectural research task:
-
-**Research topic**: AWS Step Functions callback integration pattern for Human-in-the-Loop approval
-
-The MCP-assisted research covered:
-- callback with Task Token
-- waitForTaskToken
-- Task Token context
-- SendTaskSuccess
-- SendTaskFailure
-- timeout behavior
-- callback security
-- IAM permissions for callback completion
-
-The MCP-grounded information was compared against the existing SRE Copilot HITL architecture.
-
-**Verified architecture result**: Architecture consistency: PASS
-
-#### Architecture Verification
-
-The AWS documentation confirmed:
-
-**APPROVE**
--> remediation permitted
-
-**REJECT**
--> REMEDIATION_REJECTED
--> NO SSM EXECUTION
-
-**TIMEOUT**
--> TIMEOUT_EXCEEDED
--> NO SSM EXECUTION
-
-The critical invariant **REJECT => NO SSM** is maintained.
-
-**Note**: REJECT is a valid business/workflow decision returned through the controlled callback path. After callback completion, Step Functions evaluates the approval decision and branches appropriately. SendTaskSuccess and SendTaskFailure are callback APIs, but the final implementation may use them according to workflow and technical failure semantics.
-
-**Security**: The MCP demonstration was read-only.
-
-- AWS resources modified: NO
-- CloudFormation executed: NO
-- SSM remediation executed: NO
-- Secrets stored in mcp.json: NO
-- Wildcard auto-approval: NO
-
-**Evidence**: [docs/kiro-university/lesson-6-mcp.md](./docs/kiro-university/lesson-6-mcp.md)
-
-## Kiro University: Powers vs MCP
-
-### Lesson 5 - Kiro Power
-
-**Flow**: Conversation context → Relevant Power detected → Specialized knowledge loaded on demand → SRE Copilot architecture guidance
-
-Powers provide specialized contextual knowledge and workflows on demand based on conversation context.
-
-### Lesson 6 - MCP
-
-**Flow**: SRE Copilot technical question → Kiro → aws-docs MCP → External MCP tool invocation → AWS documentation retrieval → Grounded architectural assessment
-
-MCP provides external tools, prompts, and resources that Kiro can actively invoke.
-
-## Day 3 Evidence Flow
-
-SRE Copilot HITL Architecture
-→ AWS Step Functions Power activates
-→ Specialized Step Functions guidance loaded
-→ AWS Documentation MCP invoked
-→ Official AWS documentation retrieved
-→ HITL architecture assessed
-→ Architecture consistency: PASS
-
-This demonstrates how Powers and MCP complement each other inside a real project workflow.
-
-## Getting Started
-
-> **Note**: This project is under active development. Installation and deployment instructions will be added as components are implemented.
+---
+
+## 🛡️ Architectural Safety Invariants
+
+Every layer of SRE Copilot adheres to five non-negotiable safety rules:
+
+| # | Invariant Rule | Enforcement Mechanism |
+|---|---|---|
+| **1** | **AI Engine is Read-Only** | LLM / Bedrock prompt pipelines only query telemetry and synthesize root causes; they have zero AWS execution permissions. |
+| **2** | **Risk Assessment is Non-Executing** | Evaluates blast radius, blast score, and target nodes strictly in memory without side effects. |
+| **3** | **Explicit HITL Approval Required** | All state-changing actions (`RESTART_SERVICE`, `SCALE_ASG`, `FLUSH_POOL`) require explicit human authorization (`APPROVE`). `REJECT` or `TIMEOUT` strictly halts remediation. |
+| **4** | **Execution is Idempotent & Scoped** | Only authorized SSM runbooks are executed via dedicated worker roles; Task Tokens are never logged. |
+| **5** | **Independent Verification** | Remediation success $\neq$ recovery. Service health must be independently verified by telemetry before closing an incident. |
+
+---
+
+## 🚀 Key Features & Capabilities
+
+### 1. Mission Control & SLI/SLO Telemetry Bar
+- **Real-Time SLI Telemetry**: Live metrics for **Mean Time to Detect (MTTD)**, **Mean Time to Recover (MTTR)**, **Auto-Remediation Success Rate**, and **Global SLA Availability (99.98%)**.
+- **Observability Deep Links**: 1-click access to live **Grafana** (`:3001`) and **Prometheus** (`:9090`) telemetry dashboards.
+- **Dark / Light Theme Support**: Polished mission-control aesthetic with modern glassmorphism, glowing status pills, and reactive Recharts analytics.
+
+### 2. Live Incident Injector & Real Pipeline
+- **Real Incident Injection**: Unlike synthetic UI mocks, the **"Inject Live Incident"** engine pushes actual incidents to the FastAPI backend (`POST /api/v1/incidents`).
+- **Complete End-to-End Orchestration**: Automatically triggers:
+  1. Incident creation in PostgreSQL (`STATUS: INVESTIGATING`).
+  2. Automated Risk Assessment calculation (Risk Score, Blast Radius).
+  3. Pending **Human Approval** creation (`STATUS: PENDING`).
+  4. Structured entry in the **Immutable Audit Trail**.
+- **Presets & Custom Chaos Builder**: Inject preconfigured outages (*High Memory Leak*, *Database Pool Exhaustion*, *Dead-Letter Queue Spike*, *Disk Space Exhaustion*) or define custom chaos parameters.
+
+### 3. Human-In-The-Loop (HITL) Approval Queue
+- **Interactive Decision Engine**: Review root-cause findings, recommended SSM runbooks, target hosts, and estimated risk score before taking action.
+- **One-Click Authorization**:
+  - `APPROVE`: Dispatches idempotent SSM automation runbook to the target node.
+  - `REJECT`: Immediately aborts remediation, transitions incident to `REJECTED`, and logs human rationale.
+  - `TIMEOUT`: Auto-cancels if the approval window expires.
+- **Dry-Run Mode**: Test remediation logic safely in staging/simulated environments before actual dispatch.
+
+### 4. Automated SRE Post-Mortem Report Generator
+- **Comprehensive Incident Analysis**: One-click generation of professional post-mortems featuring:
+  - Incident executive summary, severity, and impacted services.
+  - Detailed incident chronology and resolution timeline.
+  - **5-Whys Root Cause Analysis**.
+  - **Preventative Action Items (CAPA)** categorized by Preventive, Detective, and Responsive actions.
+- **Enterprise Company Letterhead**: Dynamically brands post-mortems with your company logo, company name, and document metadata.
+- **Dual Export**: Export as clean **Markdown (`.md`)** for GitHub/Confluence or print directly as a styled **PDF**.
+
+### 5. SSM Runbook Catalog & Dry-Run Simulator
+- **Curated Production Runbooks**:
+  - `SRE-Copilot-RestartService`: Graceful systemd/container service recycling.
+  - `SRE-Copilot-ScaleASG`: Auto Scaling Group capacity expansion.
+  - `SRE-Copilot-ReplayDeadLetters`: Safe SQS/Kafka dead-letter queue reprocessing.
+  - `SRE-Copilot-FlushDatabasePool`: PostgreSQL / RDS connection pool draining.
+  - `SRE-Copilot-ClearDiskSpace`: Safe rotation and pruning of `/var/log` artifacts.
+- **Interactive Dry-Run Simulator**: Execute sandboxed runbook trials against target nodes to inspect logs and exit codes prior to production rollout.
+
+### 6. Target Fleet & Server Node Connection Hub
+- **Instance Management**: View and manage target nodes (Production, Staging, Database, Cache) with IP, Region, and SSM Agent connection status.
+- **Live Terminal Probe**: Interactive AWS SSM Agent handshake test validating agent ping, latency, and remote command execution readiness.
+- **AWS Bedrock & Model Configuration**: Configure AI provider settings, inference temperature, and model IDs (`anthropic.claude-3-5-sonnet`, `amazon.titan-text-express`).
+
+### 7. Enterprise Company Branding & Logo Customization
+- **Full Brand White-Labeling**: Upload or link your company logo and customize the organization name in **Settings** (`/settings`).
+- **Global Synchronization**: Company branding updates in real-time across the top navigation bar, SRE Mission Control dashboard, and all Post-Mortem reports.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+graph TB
+    subgraph Frontend ["React 18 + TypeScript (Port 3000)"]
+        UI[Mission Control Dashboard]
+        Inj[Live Incident Injector]
+        HITL_UI[HITL Approval Page]
+        Audit_UI[Audit Trail & Post-Mortem]
+        Fleet_UI[Settings & Fleet Manager]
+    end
+
+    subgraph Backend ["FastAPI Core (Port 8000)"]
+        API[API Gateway & Router]
+        Diag[AI Diagnosis Engine / Bedrock]
+        Risk[Risk Assessment Engine]
+        SSM[SSM Execution Dispatcher]
+        Verify[Health Verification Engine]
+        AuditEngine[Audit Trail Logger]
+    end
+
+    subgraph DataStore ["Persistence & Telemetry"]
+        PG[(PostgreSQL 15)]
+        Prom[Prometheus :9090]
+        Graf[Grafana :3001]
+    end
+
+    subgraph TargetFleet ["Target Infrastructure"]
+        Node1[EC2 / Production Node]
+        Node2[RDS / Database Cluster]
+        Node3[ECS / Worker Pods]
+    end
+
+    UI --> API
+    Inj --> API
+    HITL_UI --> API
+    API --> PG
+    API --> Diag
+    Diag --> Risk
+    Risk --> API
+    API --> SSM
+    SSM --> Node1
+    SSM --> Node2
+    Node1 --> Prom
+    Prom --> Graf
+    SSM --> Verify
+    Verify --> AuditEngine
+    AuditEngine --> PG
+```
+
+---
+
+## ⚡ Quick Start & Running Locally
 
 ### Prerequisites
-- AWS Account with appropriate permissions
-- Python 3.11+ and pip
-- AWS CLI configured
-- Git for version control
+- **Docker Desktop** (with Docker Compose v2)
+- **Python 3.11+** (for local development)
+- **Node.js 18+ & npm** (for frontend development)
 
-## Contributing
+### 1. Launch with Docker Compose (Recommended)
 
-We welcome contributions that align with the project's architectural safety principles. Please review the following before submitting changes:
+```bash
+# Clone the repository
+git clone https://github.com/ramonesj/SRE_Copilot.git
+cd SRE_Copilot
 
-1. **Security Boundaries**: Any changes must maintain the separation between diagnosis and execution
-2. **HITL Requirement**: No component may bypass human approval for state-changing operations
-3. **Audit Trail**: All significant events must be recorded in the immutable audit trail
+# Start the full stack (Frontend, Backend, PostgreSQL, Prometheus, Grafana)
+docker-compose up -d --build
+```
 
-## License
+### 2. Access Points
 
-This project is proprietary and confidential. All rights reserved.
+| Service | URL | Default Credentials |
+|---|---|---|
+| **SRE Copilot UI** | [http://localhost:3000](http://localhost:3000) | *No login required* |
+| **Backend API Docs** | [http://localhost:8000/docs](http://localhost:8000/docs) | Swagger UI |
+| **Grafana Dashboards** | [http://localhost:3001](http://localhost:3001) | `admin` / `admin` |
+| **Prometheus Metrics** | [http://localhost:9090](http://localhost:9090) | *Open access* |
+
+### 3. Run the End-to-End Simulation Script
+
+To simulate an end-to-end incident lifecycle (Ingestion $\rightarrow$ Diagnosis $\rightarrow$ Risk $\rightarrow$ HITL Approval $\rightarrow$ Remediation $\rightarrow$ Verification $\rightarrow$ Audit):
+
+```bash
+# Run the automated demo script
+python demo_end_to_end.py
+```
+
+---
+
+## 📡 API Reference & Verification Endpoints
+
+The FastAPI backend exposes fully documented RESTful endpoints:
+
+### Incidents (`/api/v1/incidents`)
+- `POST /api/v1/incidents` — Create/inject incident with auto risk assessment & HITL queue.
+- `GET /api/v1/incidents` — List all incidents with pagination and status filtering.
+- `GET /api/v1/incidents/{id}` — Get complete incident details, telemetry, and evidence.
+- `PUT /api/v1/incidents/{id}` — Update incident status or resolution notes.
+
+### Approvals (`/api/v1/approvals`)
+- `GET /api/v1/approvals` — List all pending, approved, and rejected approvals.
+- `POST /api/v1/approvals/{id}/decision` — Submit human authorization (`APPROVE` or `REJECT`) with rationale.
+
+### Audit & Telemetry (`/api/v1/audit`, `/api/v1/metrics`)
+- `GET /api/v1/audit` — Query immutable audit trail logs.
+- `GET /api/v1/metrics/dashboard` — Aggregated MTTD, MTTR, success rates, and active incident counts.
+
+---
+
+## 🎓 Kiro University Deliverables & Verification
+
+SRE Copilot satisfies all requirements across **Lessons 1–7**, **Bonus 2**, and **Exam Deliverables**:
+
+| Milestone / Lesson | Description | Status | Evidence |
+|---|---|---|---|
+| **Lesson 1–2: Spec & Steering** | SRE Copilot system prompt, requirements, and design docs. | ✅ Complete | [docs/kiro-university/](./docs/kiro-university/) |
+| **Lesson 3: Quality Hooks** | Python quality gates, security boundary guards, post-task validation. | ✅ Complete | [.kiro/hooks/](./.kiro/hooks/) |
+| **Lesson 4: Property-Based Testing** | 200 Hypothesis property test cases validating Risk Score bounds & AI independence. | ✅ Complete | [tests/test_risk_engine_pbt.py](file:///e:/mis_proyectos/SRE_Copilot/tests/test_risk_engine_pbt.py) |
+| **Lesson 5: Kiro Powers** | AWS Step Functions Power for HITL state machine orchestration. | ✅ Complete | [docs/kiro-university/lesson-5-powers.md](./docs/kiro-university/lesson-5-powers.md) |
+| **Lesson 6: AWS Docs MCP** | Model Context Protocol integration for official AWS documentation retrieval. | ✅ Complete | [.kiro/settings/mcp.json](./.kiro/settings/mcp.json) |
+| **Lesson 7: Custom SRE Agent** | Autonomous SRE agent with strict safety boundary execution. | ✅ Complete | [backend/app/services/ai_copilot.py](file:///e:/mis_proyectos/SRE_Copilot/backend/app/services/ai_copilot.py) |
+| **Bonus 2: End-to-End Orchestration** | Live incident injection, UI dashboard, HITL approval, audit trail & post-mortem generator. | ✅ Complete | [demo_end_to_end.py](file:///e:/mis_proyectos/SRE_Copilot/demo_end_to_end.py) |
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
 <div align="center">
-  <p><em>AI diagnoses. Humans authorize. Automation remediates. Recovery is verified.</em></p>
+  <p><em>Built with ❤️ by SREs, for SREs. Empowering human operators with autonomous safety.</em></p>
   <p><a href="./README.es.md">Leer en Español</a></p>
 </div>

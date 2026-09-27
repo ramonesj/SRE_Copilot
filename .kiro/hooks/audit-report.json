@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Generar informe de auditoría",
+      "trigger": "PostFileSave",
+      "description": "Generar informe de auditoría del frontend",
+      "action": {
+        "type": "command",
+        "command": "echo \"Finalizando auditoría\""
+      }
+    }
+  ]
+}

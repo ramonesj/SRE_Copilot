@@ -1,0 +1,30 @@
+{
+  "execution_id": "exec-79408bcfec9b",
+  "incident_id": "inc-97199995fe33",
+  "runbook_name": "SRE-Copilot-ServiceRestart",
+  "parameters": {
+    "instance_id": "i-1234567890abcdef0",
+    "service_name": "nginx",
+    "region": "us-east-1",
+    "timeout_seconds": 300,
+    "environment": "development"
+  },
+  "status": "SUCCESS",
+  "started_at": "2026-09-27T06:01:56.137774",
+  "completed_at": "2026-09-27T06:01:56.238367",
+  "error_message": null,
+  "output": {
+    "result": "success",
+    "message": "Runbook SRE-Copilot-ServiceRestart executed successfully",
+    "execution_summary": {
+      "service_state": "active",
+      "restart_count": 1,
+      "uptime_minutes": 2,
+      "check_result": "SUCCESS"
+    },
+    "timestamp": "2026-09-27T06:01:56.238367"
+  },
+  "retry_count": 0,
+  "max_retries": 3,
+  "created_at": "2026-09-27T06:01:56.137771"
+}

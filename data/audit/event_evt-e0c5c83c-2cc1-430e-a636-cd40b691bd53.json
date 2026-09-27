@@ -1,0 +1,15 @@
+{
+  "event_id": "evt-e0c5c83c-2cc1-430e-a636-cd40b691bd53",
+  "timestamp": "2026-09-26T15:38:11.295225",
+  "actor": "HealthVerification",
+  "action": "VERIFICATION_COMPLETED",
+  "details": {
+    "check_id": "check-6ab3d6",
+    "method": "SERVICE_STATUS",
+    "status": "HEALTHY",
+    "duration_seconds": 1.965172290802002,
+    "check_number": 1,
+    "total_checks": 2
+  },
+  "incident_id": "inc-96d35a02eadd"
+}

@@ -77,3 +77,16 @@ temp/
 # Test outputs
  test-results/
  test-output/
+
+# Node.js / Frontend
+node_modules/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Video files
+*.webm
+*.mp4
+*.mov
+*.avi

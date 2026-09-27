@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Simulate Incident - SRE Copilot{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3">
+                <i class="bi bi-play-circle me-2"></i>
+                Incident Simulation
+            </h1>
+            <p class="text-muted">
+                Create test incidents to demonstrate the SRE Copilot workflow
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning me-2"></i>
+                        Create Test Incident
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/simulate/create" data-loading="true" data-loading-message="Creating incident and running workflow...">
+                        <!-- Scenario Selection -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-diagram-3 me-1"></i>
+                                Scenario Path
+                            </label>
+                            <p class="text-muted small mb-2">
+                                Select the demonstration scenario you want to execute
+                            </p>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 scenario-card">
+                                        <input class="form-check-input" type="radio" name="scenario" value="AUTO_APPROVE" id="scenario-approve" checked>
+                                        <label class="form-check-label" for="scenario-approve">
+                                            <div class="fw-bold text-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Happy Path - APPROVE
+                                            </div>
+                                            <div class="small text-muted mt-1">
+                                                Detection → Diagnosis → Approval → Execution → Verification → RESOLVED
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 scenario-card">
+                                        <input class="form-check-input" type="radio" name="scenario" value="AUTO_REJECT" id="scenario-reject">
+                                        <label class="form-check-label" for="scenario-reject">
+                                            <div class="fw-bold text-danger">
+                                                <i class="bi bi-x-circle me-1"></i>
+                                                Reject Path
+                                            </div>
+                                            <div class="small text-muted mt-1">
+                                                Detection → Diagnosis → Approval REJECTED → NO EXECUTION
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 scenario-card">
+                                        <input class="form-check-input" type="radio" name="scenario" value="AUTO_TIMEOUT" id="scenario-timeout">
+                                        <label class="form-check-label" for="scenario-timeout">
+                                            <div class="fw-bold text-warning">
+                                                <i class="bi bi-clock me-1"></i>
+                                                Timeout Path
+                                            </div>
+                                            <div class="small text-muted mt-1">
+                                                Detection → Diagnosis → Approval TIMEOUT → NO EXECUTION
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check card p-3 scenario-card">
+                                        <input class="form-check-input" type="radio" name="scenario" value="AUTO_RECOVERY_FAILED" id="scenario-recovery-failed">
+                                        <label class="form-check-label" for="scenario-recovery-failed">
+                                            <div class="fw-bold text-warning">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                                Recovery Failed Path
+                                            </div>
+                                            <div class="small text-muted mt-1">
+                                                Detection → Diagnosis → Approval → Execution → Verification FAIL → RECOVERY_FAILED
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Selection -->
+                        <div class="mb-4">
+                            <label for="service" class="form-label fw-bold">
+                                <i class="bi bi-hdd me-1"></i>
+                                Target Service
+                            </label>
+                            <select class="form-select" id="service" name="service">
+                                <option value="nginx">nginx - Web Server</option>
+                                <option value="httpd">httpd - Apache HTTP Server</option>
+                                <option value="mysql">mysql - Database Server</option>
+                                <option value="redis">redis - Cache Server</option>
+                                <option value="custom">Custom Service</option>
+                            </select>
+                        </div>
+
+                        <!-- Node Selection -->
+                        <div class="mb-4">
+                            <label for="node" class="form-label fw-bold">
+                                <i class="bi bi-server me-1"></i>
+                                Target Node
+                            </label>
+                            <select class="form-select" id="node" name="node">
+                                <option value="i-0abc123def456">i-0abc123def456 - Production Web-01</option>
+                                <option value="i-0def789ghi012">i-0def789ghi012 - Production Web-02</option>
+                                <option value="i-0jkl345mno678">i-0jkl345mno678 - Staging Web-01</option>
+                            </select>
+                        </div>
+
+                        <!-- Severity -->
+                        <div class="mb-4">
+                            <label for="severity" class="form-label fw-bold">
+                                <i class="bi bi-bar-chart me-1"></i>
+                                Severity Level
+                            </label>
+                            <select class="form-select" id="severity" name="severity">
+                                <option value="critical">Critical - Service Down</option>
+                                <option value="high">High - Performance Degraded</option>
+                                <option value="medium">Medium - Intermittent Issues</option>
+                                <option value="low">Low - Minor Warning</option>
+                            </select>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div class="mb-4">
+                            <label for="error_message" class="form-label fw-bold">
+                                <i class="bi bi-bug me-1"></i>
+                                Error Message (Optional)
+                            </label>
+                            <textarea class="form-control" id="error_message" name="error_message" rows="3" placeholder="Enter custom error message or leave blank for default">Connection refused: service unavailable</textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-play-fill me-2"></i>
+                                Start Simulation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Security Boundaries Card -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-dark text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Security Boundaries
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning small mb-2">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        <strong>REJECT</strong> → NO SSM Execution
+                    </div>
+                    <div class="alert alert-warning small mb-2">
+                        <i class="bi bi-clock me-1"></i>
+                        <strong>TIMEOUT</strong> → NO SSM Execution
+                    </div>
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Execution Success</strong> ≠ Recovery Verified
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Info Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Workflow Steps
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0 small">
+                        <li class="mb-2">Alert Ingestion & Incident Creation</li>
+                        <li class="mb-2">Evidence Collection (CloudWatch Logs)</li>
+                        <li class="mb-2">AI Diagnosis (Bedrock)</li>
+                        <li class="mb-2">Risk Assessment & Policy Check</li>
+                        <li class="mb-2">HITL Approval (Human Decision)</li>
+                        <li class="mb-2">SSM Runbook Execution</li>
+                        <li class="mb-2">Health Verification</li>
+                        <li>Incident Resolution</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.scenario-card {
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.scenario-card:hover {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.scenario-card:has(input:checked) {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+</style>
+{% endblock %}

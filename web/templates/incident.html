@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col"><h2><i class="bi bi-file-earmark-text"></i> Incident Details</h2></div>
+    <div class="col-auto"><a href="/" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back</a></div>
+</div>
+
+<!-- Workflow Progress Visualization -->
+<div class="card mb-3 border-0 shadow-sm">
+    <div class="card-header bg-dark text-white">
+        <h6 class="mb-0"><i class="bi bi-diagram-3 me-2"></i>Workflow Progress</h6>
+    </div>
+    <div class="card-body">
+        <div class="workflow-progress">
+            <div class="workflow-step {% if incident.status != 'CREATED' %}completed{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-lightning"></i>
+                </div>
+                <div class="workflow-step-label">Alert</div>
+            </div>
+            <div class="workflow-step {% if incident.status in ['EVIDENCE_COLLECTED', 'DIAGNOSIS_COMPLETE', 'RISK_ASSESSED', 'APPROVED', 'EXECUTING', 'RESOLVED', 'REJECTED', 'TIMEOUT_EXCEEDED', 'RECOVERY_FAILED'] %}completed{% elif incident.status == 'CREATED' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="workflow-step-label">Evidence</div>
+            </div>
+            <div class="workflow-step {% if incident.status in ['DIAGNOSIS_COMPLETE', 'RISK_ASSESSED', 'APPROVED', 'EXECUTING', 'RESOLVED', 'REJECTED', 'TIMEOUT_EXCEEDED', 'RECOVERY_FAILED'] %}completed{% elif incident.status == 'EVIDENCE_COLLECTED' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-cpu"></i>
+                </div>
+                <div class="workflow-step-label">Diagnosis</div>
+            </div>
+            <div class="workflow-step {% if incident.status in ['RISK_ASSESSED', 'APPROVED', 'EXECUTING', 'RESOLVED', 'REJECTED', 'TIMEOUT_EXCEEDED', 'RECOVERY_FAILED'] %}completed{% elif incident.status == 'DIAGNOSIS_COMPLETE' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+                <div class="workflow-step-label">Risk</div>
+            </div>
+            <div class="workflow-step {% if incident.status in ['APPROVED', 'EXECUTING', 'RESOLVED', 'REJECTED', 'TIMEOUT_EXCEEDED', 'RECOVERY_FAILED'] %}completed{% elif incident.status == 'RISK_ASSESSED' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-hand-index-thumb"></i>
+                </div>
+                <div class="workflow-step-label">Approval</div>
+            </div>
+            <div class="workflow-step {% if incident.status in ['EXECUTING', 'RESOLVED', 'RECOVERY_FAILED'] %}completed{% elif incident.status == 'APPROVED' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-play-circle"></i>
+                </div>
+                <div class="workflow-step-label">Execute</div>
+            </div>
+            <div class="workflow-step {% if incident.status == 'RESOLVED' %}completed{% elif incident.status == 'EXECUTING' %}active{% endif %}">
+                <div class="workflow-step-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="workflow-step-label">Verify</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-info-circle"></i> Summary</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>ID:</strong> <code>{{ incident.incident_id }}</code></p>
+                <p><strong>Service:</strong> {{ incident.service }}</p>
+                <p><strong>Severity:</strong> <span class="badge bg-{{ 'danger' if incident.severity == 'critical' else 'warning' }}">{{ incident.severity }}</span></p>
+                <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if incident.status == 'RESOLVED' else 'danger' if incident.status == 'REJECTED' else 'warning' if incident.status == 'RECOVERY_FAILED' else 'secondary' if incident.status == 'TIMEOUT_EXCEEDED' else 'primary' }}">{{ incident.status }}</span></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Created:</strong> {{ incident.timestamp.strftime('%Y-%m-%d %H:%M:%S') if incident.timestamp else 'N/A' }}</p>
+                <p><strong>Instance:</strong> <code>{{ incident.instance_id or 'N/A' }}</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if evidence %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-collection"></i> Evidence</div>
+    <div class="card-body">
+        <p><strong>Type:</strong> {{ evidence.evidence_type }}</p>
+        <p><strong>Logs:</strong> {{ evidence.logs|length }} entries</p>
+    </div>
+</div>
+{% endif %}
+
+{% if diagnosis %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-cpu"></i> AI Diagnosis</div>
+    <div class="card-body">
+        <p><strong>Summary:</strong> {{ diagnosis.diagnosis.summary }}</p>
+        <p><strong>Confidence:</strong> <span class="badge bg-{{ 'success' if diagnosis.diagnosis.confidence > 0.8 else 'warning' }}">{{ (diagnosis.diagnosis.confidence * 100)|round(1) }}%</span></p>
+        <p><strong>Root Cause:</strong> {{ diagnosis.diagnosis.root_cause.cause_type }}</p>
+        <p><strong>Action:</strong> {{ diagnosis.diagnosis.recommended_action }}</p>
+    </div>
+</div>
+{% endif %}
+
+{% if risk %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-exclamation-triangle"></i> Risk Assessment</div>
+    <div class="card-body">
+        <p><strong>Risk:</strong> <span class="{{ 'risk-low' if risk.risk_classification == 'LOW' else 'risk-medium' if risk.risk_classification == 'MEDIUM' else 'risk-high' if risk.risk_classification == 'HIGH' else 'risk-critical' }}">{{ risk.remediation_risk }} ({{ risk.risk_classification }})</span></p>
+        <p><strong>Runbook:</strong> <code>{{ risk.ssm_runbook }}</code></p>
+    </div>
+</div>
+{% endif %}
+
+{% if execution %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-play-circle"></i> Execution</div>
+    <div class="card-body">
+        <p><strong>ID:</strong> <code>{{ execution.execution_id }}</code></p>
+        <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if execution.status.value == 'SUCCESS' else 'danger' }}">{{ execution.status.value }}</span></p>
+    </div>
+</div>
+{% endif %}
+
+{% if verification %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-check-circle"></i> Verification</div>
+    <div class="card-body">
+        <div class="security-boundary"><strong>Critical:</strong> SSM Success ≠ Recovery Verified</div>
+        <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if verification.success else 'danger' }}">{{ verification.overall_status.value }}</span></p>
+        <p><strong>Confidence:</strong> {{ (verification.confidence_score * 100)|round(1) }}%</p>
+    </div>
+</div>
+{% endif %}
+
+{% if incident.status == 'RISK_ASSESSED' %}
+<div class="card mb-3">
+    <div class="card-header"><i class="bi bi-hand-index-thumb"></i> Approval Required</div>
+    <div class="card-body text-center">
+        <a href="/approve/{{ incident.incident_id }}" class="btn btn-warning btn-lg"><i class="bi bi-hand-index-thumb"></i> Review & Approve</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

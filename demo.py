@@ -8,7 +8,9 @@ This script demonstrates:
 2. Incident creation and lifecycle management
 3. Evidence collection
 4. AI diagnosis generation
-5. Audit event logging
+5. Risk assessment
+6. Human approval (APPROVE/REJECT/TIMEOUT)
+7. Audit event logging
 """
 
 import sys
@@ -21,6 +23,8 @@ from alert_ingestion import LocalAlertProvider
 from incident_manager import LocalIncidentManager
 from evidence_collection import LocalEvidenceCollectionProvider
 from diagnosis_engine import LocalDiagnosisProvider
+from risk_assessment import LocalRiskAssessmentProvider
+from approval import LocalApprovalProvider, ApprovalDecision
 from audit import LocalAuditLogger
 from shared.models import Incident
 
@@ -52,13 +56,13 @@ def demo_alert_ingestion():
         print(f"✓ Alert validated: {alert.service} ({alert.severity})")
     else:
         print(f"✗ Alert validation failed: {error}")
-        return None
+        return None, None
     
     # Create incident from alert
     incident = provider.create_incident_from_alert(alert)
     print(f"✓ Incident created: {incident.incident_id}")
     
-    return incident
+    return incident, provider
 
 
 def demo_incident_manager(incident):
@@ -73,7 +77,7 @@ def demo_incident_manager(incident):
         print(f"✓ Incident saved: {incident.incident_id}")
     else:
         print(f"✗ Failed to create incident: {error}")
-        return None
+        return None, None
     
     # Get incident back
     retrieved = manager.get_incident(incident.incident_id)
@@ -89,7 +93,7 @@ def demo_incident_manager(incident):
     else:
         print(f"✗ State transition failed: {error}")
     
-    return updated
+    return updated, manager
 
 
 def demo_evidence_collection(incident):
@@ -106,9 +110,9 @@ def demo_evidence_collection(incident):
         print(f"✓ Service metadata: {evidence['metadata']['service_name']}")
     else:
         print(f"✗ Evidence collection failed: {error}")
-        return None
+        return None, None
     
-    return evidence
+    return evidence, provider
 
 
 def demo_diagnosis_engine(incident, evidence_package):
@@ -129,12 +133,79 @@ def demo_diagnosis_engine(incident, evidence_package):
         print(f"  - Evidence: {len(diag['evidence'])} data points")
     else:
         print(f"✗ Diagnosis failed: {error}")
-        return None
+        return None, None
     
-    return diagnosis
+    return diagnosis, provider
 
 
-def demo_audit_logging(incident, evidence_package, diagnosis):
+def demo_risk_assessment(incident, diagnosis):
+    """Demonstrate risk assessment workflow"""
+    print_section("RISK ASSESSMENT")
+    
+    provider = LocalRiskAssessmentProvider()
+    
+    # Assess risk
+    success, risk_assessment, error = provider.assess_risk(incident, diagnosis)
+    if success:
+        print(f"✓ Risk assessed:")
+        print(f"  - Remediation Risk: {risk_assessment['remediation_risk']}")
+        print(f"  - Classification: {risk_assessment['risk_classification']}")
+        print(f"  - SSM Runbook: {risk_assessment['ssm_runbook']}")
+    else:
+        print(f"✗ Risk assessment failed: {error}")
+        return None, None
+    
+    return risk_assessment, provider
+
+
+def demo_approval_workflow(incident, risk_assessment, scenario: str):
+    """Demonstrate approval workflow based on scenario"""
+    print_section(f"HITL APPROVAL - {scenario} SCENARIO")
+    
+    provider = LocalApprovalProvider()
+    
+    # Create approval request
+    success, approval_request, error = provider.create_approval_request(
+        incident, risk_assessment
+    )
+    if not success:
+        print(f"✗ Failed to create approval request: {error}")
+        return None, None, None
+    
+    print(f"✓ Approval request created: {approval_request.approval_request_id}")
+    print(f"  - Diagnosis: {approval_request.diagnosis_summary}")
+    print(f"  - Risk: {approval_request.remediation_risk} ({approval_request.risk_classification})")
+    print(f"  - Action: {approval_request.recommended_action}")
+    
+    # Process based on scenario
+    if scenario == "APPROVE":
+        success, approval_response, error = provider.approve(approval_request)
+        if success:
+            print(f"✓ APPROVED: {approval_request.approval_request_id}")
+            print(f"  - Approver: {approval_response.approver}")
+            print(f"  - Decision: {approval_response.decision.value}")
+            return approval_response.decision, approval_request, provider
+    
+    elif scenario == "REJECT":
+        success, approval_response, error = provider.reject(approval_request)
+        if success:
+            print(f"✗ REJECTED: {approval_request.approval_request_id}")
+            print(f"  - Approver: {approval_response.approver}")
+            print(f"  - Decision: {approval_response.decision.value}")
+            return approval_response.decision, approval_request, provider
+    
+    elif scenario == "TIMEOUT":
+        success, approval_response, error = provider.timeout(approval_request)
+        if success:
+            print(f"✗ TIMEOUT: {approval_request.approval_request_id}")
+            print(f"  - Approver: {approval_response.approver}")
+            print(f"  - Decision: {approval_response.decision.value}")
+            return approval_response.decision, approval_request, provider
+    
+    return None, None, None
+
+
+def demo_audit_logging(incident, evidence_package, diagnosis, risk_assessment, decision: ApprovalDecision, approval_request_id: str):
     """Demonstrate audit event logging"""
     print_section("AUDIT LOGGER")
     
@@ -156,6 +227,16 @@ def demo_audit_logging(incident, evidence_package, diagnosis):
             'actor': 'DiagnosisEngine',
             'action': 'DIAGNOSIS_GENERATED',
             'details': {'summary': diagnosis['diagnosis']['summary'], 'confidence': diagnosis['diagnosis']['confidence']}
+        },
+        {
+            'actor': 'RiskAssessment',
+            'action': 'RISK_ASSESSED',
+            'details': {'remediation_risk': risk_assessment['remediation_risk'], 'classification': risk_assessment['risk_classification']}
+        },
+        {
+            'actor': 'HITLApproval',
+            'action': 'APPROVAL_REQUESTED',
+            'details': {'approval_request_id': approval_request_id, 'decision': decision.value}
         }
     ]
     
@@ -181,36 +262,72 @@ def demo_audit_logging(incident, evidence_package, diagnosis):
     print(f"\n✓ Retrieved {len(retrieved_events)} audit events for incident")
 
 
+def run_scenario(scenario: str):
+    """Run a complete demo scenario"""
+    print("\n" + "=" * 60)
+    print(f"  SCENARIO: {scenario}")
+    print("=" * 60)
+    
+    # Alert Ingestion
+    incident, alert_provider = demo_alert_ingestion()
+    if not incident:
+        return False
+    
+    # Incident Manager
+    incident, incident_manager = demo_incident_manager(incident)
+    if not incident:
+        return False
+    
+    # Evidence Collection
+    evidence, evidence_provider = demo_evidence_collection(incident)
+    if not evidence:
+        return False
+    
+    # Diagnosis Engine
+    diagnosis, diagnosis_provider = demo_diagnosis_engine(incident, evidence)
+    if not diagnosis:
+        return False
+    
+    # Risk Assessment
+    risk_assessment, risk_provider = demo_risk_assessment(incident, diagnosis)
+    if not risk_assessment:
+        return False
+    
+    # Approval Workflow
+    decision, approval_request, approval_provider = demo_approval_workflow(incident, risk_assessment, scenario)
+    if not decision:
+        return False
+    
+    # Audit Logging
+    demo_audit_logging(incident, evidence, diagnosis, risk_assessment, decision, approval_request.approval_request_id)
+    
+    return True
+
+
 def main():
-    """Run the complete demo"""
+    """Run the complete demo with all scenarios"""
     print("=" * 60)
     print("  SRE Copilot MVP Demo - Local Incident Pipeline")
     print("=" * 60)
-    print("  Sprint 2: Evidence Collection + Diagnosis Engine")
+    print("  Sprint 3: Risk Assessment + HITL Approval")
     print("=" * 60)
     
-    try:
-        # Run demo steps
-        incident = demo_alert_ingestion()
-        if incident:
-            incident = demo_incident_manager(incident)
-            if incident:
-                evidence = demo_evidence_collection(incident)
-                if evidence:
-                    diagnosis = demo_diagnosis_engine(incident, evidence)
-                    if diagnosis:
-                        demo_audit_logging(incident, evidence, diagnosis)
-        
-        print_section("DEMO COMPLETE")
-        print("✓ All components working locally")
-        print("✓ No AWS dependencies required")
-        print("\nNext steps: Implement Risk Assessment and HITL Approval")
-        
-    except Exception as e:
-        print(f"\n✗ Demo failed with error: {e}")
-        import traceback
-        traceback.print_exc()
-        return 1
+    scenarios = ["APPROVE", "REJECT", "TIMEOUT"]
+    results = {}
+    
+    for scenario in scenarios:
+        success = run_scenario(scenario)
+        results[scenario] = success
+    
+    print_section("DEMO COMPLETE")
+    print("\nScenario Results:")
+    for scenario, success in results.items():
+        status = "✓ PASS" if success else "✗ FAIL"
+        print(f"  {scenario}: {status}")
+    
+    print("\n✓ All components working locally")
+    print("✓ No AWS dependencies required")
+    print("\nNext steps: Implement SSM Executor and Health Verification")
     
     return 0
 
