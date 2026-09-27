@@ -5,7 +5,7 @@
 
 ![SRE Copilot Logo](./logo%20kiro/logo.png)
 
-**Realizado por José Ramones**  
+**Realizado por José J. Ramones Moreno**  
 **Última Fecha de Actualización: 2026/09/27 4:16 a.m.**
 
 </div>
