@@ -274,3 +274,5 @@ Distribuido bajo la Licencia **MIT**. Consulte el archivo `LICENSE` para más in
   <p><em>Desarrollado con ❤️ por y para ingenieros SRE. Potenciando a los operadores humanos con seguridad autónoma.</em></p>
   <p><a href="./README.md">Read in English</a></p>
 </div>
+**Realizado por José J. Ramones Moreno**  
+**Última Fecha de Actualización: 2026/09/27 4:16 a.m.**
