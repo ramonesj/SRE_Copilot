@@ -208,7 +208,17 @@ cd SRE_Copilot
 docker-compose up -d --build
 ```
 
-### 2. Puntos de Acceso
+### 2. Detener / Apagar
+
+```bash
+# Detener y eliminar contenedores y redes (los datos se conservan en volúmenes)
+docker compose down
+
+# Detener y eliminar también los volúmenes de datos (reinicio completo)
+docker compose down -v
+```
+
+### 3. Puntos de Acceso
 
 | Servicio | URL | Credenciales |
 |---|---|---|
@@ -217,7 +227,7 @@ docker-compose up -d --build
 | **Dashboards Grafana** | [http://localhost:3001](http://localhost:3001) | `admin` / `admin` |
 | **Métricas Prometheus** | [http://localhost:9090](http://localhost:9090) | *Acceso directo* |
 
-### 3. Ejecutar el Script de Demostración Extremo a Extremo
+### 4. Ejecutar el Script de Demostración Extremo a Extremo
 
 Para simular el ciclo de vida completo de un incidente de forma automatizada:
 

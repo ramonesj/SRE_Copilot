@@ -208,7 +208,17 @@ cd SRE_Copilot
 docker-compose up -d --build
 ```
 
-### 2. Access Points
+### 2. Stop / Shutdown
+
+```bash
+# Stop and remove all containers, networks (data is preserved in volumes)
+docker compose down
+
+# Stop and also delete all data volumes (full reset)
+docker compose down -v
+```
+
+### 3. Access Points
 
 | Service | URL | Default Credentials |
 |---|---|---|
@@ -217,7 +227,7 @@ docker-compose up -d --build
 | **Grafana Dashboards** | [http://localhost:3001](http://localhost:3001) | `admin` / `admin` |
 | **Prometheus Metrics** | [http://localhost:9090](http://localhost:9090) | *Open access* |
 
-### 3. Run the End-to-End Simulation Script
+### 4. Run the End-to-End Simulation Script
 
 To simulate an end-to-end incident lifecycle (Ingestion $\rightarrow$ Diagnosis $\rightarrow$ Risk $\rightarrow$ HITL Approval $\rightarrow$ Remediation $\rightarrow$ Verification $\rightarrow$ Audit):
 
